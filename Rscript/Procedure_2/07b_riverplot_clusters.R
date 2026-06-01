@@ -146,44 +146,57 @@ if (length(rows) == 0) {
 df_full <- do.call(rbind, rows)
 cat(paste0("  Total edges (with pathway): ", nrow(df_full), "\n"))
 
-# Aggregate to (sender, receiver, cluster, dataset) — sum weights across pathways
-df <- df_full %>%
-  group_by(sender, receiver, cluster, dataset) %>%
-  summarise(weight = sum(weight), n_pathways = n_distinct(pathway), .groups = "drop") %>%
+# Reshape: melt sender/receiver into a single 'celltype' column
+# (each edge contributes its weight twice: once for sender, once for receiver)
+df_send <- df_full %>%
+  transmute(celltype = sender,   pathway, cluster, dataset, weight)
+df_recv <- df_full %>%
+  transmute(celltype = receiver, pathway, cluster, dataset, weight)
+
+df <- rbind(df_send, df_recv) %>%
+  group_by(celltype, pathway, cluster, dataset) %>%
+  summarise(weight = sum(weight), .groups = "drop") %>%
   as.data.frame()
 
-cat(paste0("  Aggregated (sender, receiver, cluster, dataset) rows: ", nrow(df), "\n"))
+cat(paste0("  Aggregated (celltype, pathway, cluster, dataset) rows: ", nrow(df), "\n"))
 
 write.csv(df_full, file.path(out_dir, paste0("riverplot_data_", sim_type, "_full.csv")),
           row.names = FALSE)
 write.csv(df, file.path(out_dir, paste0("riverplot_data_", sim_type, "_aggregated.csv")),
           row.names = FALSE)
-cat(paste0("  Saved: riverplot_data_", sim_type, "_full.csv (per-pathway)\n"))
-cat(paste0("  Saved: riverplot_data_", sim_type, "_aggregated.csv (sender->receiver->cluster)\n\n"))
+cat(paste0("  Saved: riverplot_data_", sim_type, "_full.csv (per-edge)\n"))
+cat(paste0("  Saved: riverplot_data_", sim_type, "_aggregated.csv (celltype->pathway->cluster)\n\n"))
 
 # ============================================
 # 3. Build alluvial plot — one per dataset + combined
 # ============================================
 
 make_plot <- function(d, title_str) {
+  # Floor weights so every stratum has a minimum visible height
+  # (20% of max weight in the panel)
+  min_w <- 0.20 * max(d$weight)
+  d$weight_plot <- pmax(d$weight, min_w)
+
   ggplot(d,
-         aes(axis1 = sender, axis2 = receiver, axis3 = cluster,
-             y = weight)) +
-    geom_alluvium(aes(fill = cluster), alpha = 0.7, width = 1/8,
+         aes(axis1 = celltype, axis2 = pathway, axis3 = cluster,
+             y = weight_plot)) +
+    geom_alluvium(aes(fill = cluster), alpha = 0.7, width = 1/4,
                   show.legend = FALSE) +
-    geom_stratum(width = 1/6, fill = "grey90", color = "grey40",
+    geom_stratum(width = 1/4, fill = "grey90", color = "grey40",
                  show.legend = FALSE) +
     geom_text(stat = "stratum",
               aes(label = after_stat(stratum)),
-              size = 3) +
-    scale_x_discrete(limits = c("Sender", "Receiver", "Cluster"),
-                     expand = c(0.05, 0.05)) +
+              size = 3.2) +
+    scale_x_discrete(limits = c("Cell type", "Pathway", "Cluster"),
+                     expand = c(0.08, 0.08)) +
     labs(title = title_str, y = "Aggregated communication probability",
          fill = "Cluster") +
     theme_minimal(base_size = 12) +
-    theme(panel.grid = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank())
+    theme(panel.grid     = element_blank(),
+          axis.text.y    = element_blank(),
+          axis.ticks.y   = element_blank(),
+          plot.background  = element_rect(fill = "white", color = NA),
+          panel.background = element_rect(fill = "white", color = NA))
 }
 
 # Per dataset
@@ -193,7 +206,7 @@ for (ds in dataset_names) {
   gg <- make_plot(d_sub, paste0("River plot — ", ds, " (", sim_type, ", q=", prob_quant, ")"))
   out_png <- file.path(out_dir, paste0("riverplot_", sim_type, "_", ds, ".png"))
   ggsave(out_png, gg, width = 12, height = max(6, nrow(d_sub) * 0.08), dpi = 150,
-         limitsize = FALSE)
+         bg = "white", limitsize = FALSE)
   cat(paste0("  Saved: ", basename(out_png), "\n"))
 }
 
@@ -202,7 +215,7 @@ gg_all <- make_plot(df, paste0("River plot — all datasets (", sim_type, ", q="
   facet_wrap(~ dataset, scales = "free_y", ncol = 1)
 out_png <- file.path(out_dir, paste0("riverplot_", sim_type, "_combined.png"))
 ggsave(out_png, gg_all, width = 12, height = max(8, nrow(df) * 0.06), dpi = 150,
-       limitsize = FALSE)
+       bg = "white", limitsize = FALSE)
 cat(paste0("  Saved: ", basename(out_png), "\n\n"))
 
 cat("--- River plot complete ---\n")
