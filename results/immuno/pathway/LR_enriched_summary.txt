@@ -1,0 +1,106 @@
+=== COUPLES LIGAND-RECEPTEUR ENRICHIS PAR PATHWAY ===
+
+Pathway: CADM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PTPRM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: LAMININ
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: JAM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: ADGRL
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CDH
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NCAM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NRG
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: MPZ
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Testosterone
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: APP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: COLLAGEN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: IGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Estradiol
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PDGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NRXN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PROS
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: BMP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CLDN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PCDH
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CD39
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: EPHA
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Androstenedione
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: RELN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: TENASCIN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: GAP
+  Nombre de couples LR: 0
+  Couples: 
+

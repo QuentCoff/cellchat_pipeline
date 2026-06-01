@@ -1,0 +1,186 @@
+=== COUPLES LIGAND-RECEPTEUR ENRICHIS PAR PATHWAY ===
+
+Pathway: LAMININ
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: ADGRL
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CADM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PTPRM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NRG
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: COLLAGEN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: JAM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CDH
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Testosterone
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NCAM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Cholesterol
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: APP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Estradiol
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: MPZ
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NRXN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PROS
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: BMP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: IGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PCDH
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Androstenedione
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PTPR
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: TENASCIN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CLDN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CD39
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NECTIN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Cort
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PDGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: GAS
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: EPHB
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CNTN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: PSAP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: EPHA
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: SEMA5
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: EGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: 2-AG
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: RELN
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: GAP
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NGL
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: Netrin
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: FGF
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: SEMA6
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: SEMA3
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: VCAM
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: CD99
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NT
+  Nombre de couples LR: 0
+  Couples: 
+
+Pathway: NEGR
+  Nombre de couples LR: 0
+  Couples: 
+

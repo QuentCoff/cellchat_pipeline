@@ -1,0 +1,59 @@
+========================================
+RAPPORT STATISTIQUES - DESCENDED
+Date:  2026-05-04 14:27:56 
+========================================
+
+1. DIMENSIONS GLOBALES
+----------------------
+Dimensions totales de l'objet Seurat: 86842 cellules
+Nombre de gènes: 33080
+
+Conditions disponibles:
+
+Descended    Crypto    Immuno 
+    42008     26796     18038 
+
+2. STATISTIQUES HEALTHY (DESCENDED)
+-------------------------------------
+Cellules Healthy (Descended): 26229
+
+Cell types dans Healthy (Descended):
+
+         SSC Spermatocyte    Spermatid      Sertoli       Leydig        Myoid 
+        1688         4751         2858        11054         4026         1059 
+  Fibroblast  Endothelial 
+         520          273 
+
+3. NOMBRE DE GENES DETECTES PAR CELLULE (moyenne par cluster)
+-------------------------------------------------------------
+Moyenne de gènes détectés par cellule, par cluster:
+         SSC Spermatocyte    Spermatid      Sertoli       Leydig        Myoid 
+     2283.58      3644.74      2800.35      3650.38      1849.64      1916.36 
+  Fibroblast  Endothelial 
+     1474.91      1712.60 
+
+4. COUPLES RECEPTEUR-LIGAND PAR CLUSTER
+---------------------------------------
+Nombre total de couples LR identifiés:  2600 
+Fichier des couples LR:  /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/results/descended/interactions/LR_couples_significatifs.csv 
+Fichier des gènes utilisés:  /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/results/descended/interactions/genes_utilises.csv 
+
+Nombre d'interactions sortantes (count) par cluster:
+  SSC: 130 interactions
+  Spermatocyte: 150 interactions
+  Spermatid: 98 interactions
+  Sertoli: 220 interactions
+  Leydig: 185 interactions
+  Myoid: 164 interactions
+  Fibroblast: 152 interactions
+  Endothelial: 107 interactions
+
+Résumé des interactions:
+  - Nombre total d'interactions: 1206
+  - Nombre moyen d'interactions par cluster: 150.75
+
+5. RESUME CELLCHAT
+------------------
+Cell groups: 8
+Groupes: SSC, Spermatocyte, Spermatid, Sertoli, Leydig, Myoid, Fibroblast, Endothelial
+
