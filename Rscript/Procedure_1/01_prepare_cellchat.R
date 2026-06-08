@@ -102,10 +102,7 @@ cellchat@DB <- CellChatDB
 cat("\n=== Pre-processing ===\n")
 cellchat <- subsetData(cellchat)
 
-# Step 7: parallel execution via future
-options(future.globals.maxSize = 8 * 1024^3)  # 8 GiB limit for parallel workers
-future::plan("multisession", workers = 4)
-
+# Step 7: sequential execution (future parallélism blocks on large Seurat objects)
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 
@@ -118,8 +115,8 @@ cat("\n=== Inference ===\n")
 # Step 11: computeCommunProb with explicit protocol parameters
 cellchat <- computeCommunProb(
   cellchat,
-  type           = "triMean",
-  trim           = NULL,
+  type           = "truncatedMean",
+  trim           = 0.04,
   raw.use        = TRUE,
   population.size = TRUE
 )
