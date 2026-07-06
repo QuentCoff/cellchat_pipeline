@@ -1,0 +1,22 @@
+# CellChat generated data / results
+results/
+*.rds
+*.RData
+*.RDS
+*.rda
+
+# Plots / figures
+*.png
+*.pdf
+*.svg
+*.jpg
+*.jpeg
+
+# R temporary files
+.Rhistory
+.Rproj.user
+*.Rproj
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -28,16 +28,16 @@ prefix2 <- tolower(args[2])
 
 base_dir <- "/LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat"
 
-rdata_merged <- file.path(base_dir, "results", "Procedure_2",
-                          paste0(prefix1, "_vs_", prefix2, "_trancated_0"),
+rdata_merged <- file.path(base_dir, "Vtruncated_test", "Result", "data", "merged",
+                          paste0(prefix1, "_vs_", prefix2),
                           paste0("cellchat_merged_", prefix1, "_", prefix2, ".RData"))
 
-rdata_list <- file.path(base_dir, "results", "Procedure_2",
-                        paste0(prefix1, "_vs_", prefix2, "_trancated_0"),
+rdata_list <- file.path(base_dir, "Vtruncated_test", "Result", "data", "merged",
+                        paste0(prefix1, "_vs_", prefix2),
                         paste0("cellchat_object.list_", prefix1, "_", prefix2, ".RData"))
 
-out_dir <- file.path(base_dir, "results", "Procedure_2",
-                     paste0(prefix1, "_vs_", prefix2, "_trancated_0"), "comparison", "step11")
+out_dir <- file.path(base_dir, "Vtruncated_test", "Result", "plot",
+                     paste0(prefix1, "_vs_", prefix2), "step11")
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
