@@ -1,6 +1,13 @@
-# Command preparation: 
-## Lancement de la node de calucle: 
-srun --cluster=nautilus -N1 --qos=quick --cpus-per-task=2 --mem=32G --time=2:00:00 --pty bash
+# Installation de l'environnement CellChat
+## Une seule commande (depuis une node de calcul ou le login)
+bash /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/setup.sh
+
+Pour choisir un autre nom d'environnement :
+bash /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/setup.sh mon_env_cellchat
+
+# Command preparation:
+## Lancement de la node de calucle:
+srun --cluster=nautilus -N1 --qos=quick --cpus-per-task=2 --mem=100G --time=2:00:00 --pty bash
 
 ## Activation de l'environnement:
 micromamba activate env_cellchat
@@ -8,8 +15,8 @@ micromamba activate env_cellchat
 ## Chargement des modules:
 module load gcc/13.1.0 cmake/3.26.4
 
-## Lancement de script R:
-Rscript /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/Rscript/
+## Lancement d'un script R (exemple):
+Rscript /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/ALL_clusters/src/Rscript/00_prepare_cellchat.R
 
 
 # Commandes utiles:
