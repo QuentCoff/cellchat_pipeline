@@ -161,7 +161,7 @@ summ <- data.frame(
 )
 summ$cv_dist <- summ$sd_dist / summ$mean_dist
 
-# Rank frequency table: pathway x rank -> P(rang == k)
+# Rank frequency table: pathway x rank -> P(rank == k)
 rank_freq <- t(apply(rank_mat, 2, function(r) {
   tab <- tabulate(r[!is.na(r)], nbins = K)
   tab / sum(tab)

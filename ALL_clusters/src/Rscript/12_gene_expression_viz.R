@@ -135,7 +135,7 @@ for (pw in pathways.show) {
       ) &
       labs(fill = "Condition", color = "Condition")
 
-    # Afficher les labels des cell types uniquement sur le panneau du bas
+    # Show cell type labels only on the bottom panel
     if (!is.null(gg_violin$patches) && length(gg_violin$patches$plots) > 0) {
       n_plots <- length(gg_violin$patches$plots)
       for (i in seq_len(n_plots - 1)) {

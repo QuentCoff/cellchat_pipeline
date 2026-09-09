@@ -37,15 +37,23 @@ Activate the environment and load the required modules:
 micromamba activate my_env_name
 ```
 
-## Run a pipeline script
+## Run the full pipeline
+
+To run all numbered R scripts in order:
+
+```bash
+bash ALL_clusters/src/run_all.sh
+```
+
+## Run a specific script
 
 Example:
 
 ```bash
-Rscript /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/ALL_clusters/src/Rscript/00_prepare_cellchat.R
+Rscript ALL_clusters/src/Rscript/00_prepare_cellchat.R
 ```
 
-Replace the path with the script you want to run.
+Replace the script name with the step you want to run.
 
 ## Project structure
 

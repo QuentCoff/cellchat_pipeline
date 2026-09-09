@@ -96,7 +96,7 @@ run_pair <- function(pair) {
         legend.title = element_text(size = 14)
       )
 
-    # Forcer ggrepel a afficher plus de labels (evite les suppressions par overlap)
+    # Force ggrepel to display more labels (avoid removal due to overlap)
     text_idx <- which(sapply(gg_emb$layers, function(l) inherits(l$geom, "GeomTextRepel")))
     if (length(text_idx) > 0) {
       for (idx in text_idx) {

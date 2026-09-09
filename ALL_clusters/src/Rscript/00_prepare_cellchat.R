@@ -53,7 +53,7 @@ cat("Available detailed_group values:\n")
 print(table(seurat_obj$detailed_group))
 
 cat("\n=== Configuring CellChatDB ===\n")
-CellChatDB <- CellChatDB.human  # contient v1 + v2 (3233 interactions au total)
+CellChatDB <- CellChatDB.human  # includes v1 + v2 (3233 interactions in total)
 showDatabaseCategory(CellChatDB)
 glimpse(CellChatDB$interaction)
 
