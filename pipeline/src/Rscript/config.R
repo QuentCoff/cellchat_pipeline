@@ -1,5 +1,5 @@
 # config.R
-# Central configuration for the ALL_clusters CellChat pipeline
+# Central configuration for the CellChat pipeline
 #
 # What it does:
 #   Defines all project paths, biological conditions, cell-type subsetting rules,
@@ -21,7 +21,7 @@
 # 1. PROJECT PATHS
 # ============================================================
 
-PROJECT_NAME <- "ALL_clusters"
+PROJECT_NAME <- "pipeline"
 BASE_DIR <- "/LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat"
 
 # ============================================================

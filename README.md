@@ -42,7 +42,7 @@ micromamba activate my_env_name
 To run all numbered R scripts in order:
 
 ```bash
-bash ALL_clusters/src/run_all.sh
+bash pipeline/src/run_all.sh
 ```
 
 ## Run a specific script
@@ -50,7 +50,7 @@ bash ALL_clusters/src/run_all.sh
 Example:
 
 ```bash
-Rscript ALL_clusters/src/Rscript/00_prepare_cellchat.R
+Rscript pipeline/src/Rscript/00_prepare_cellchat.R
 ```
 
 Replace the script name with the step you want to run.
@@ -69,7 +69,7 @@ cellchat_pipeline/
 │   └── ortho_complete_horse_human.csv
 ├── docs/                      # Additional documentation
 │   └── clustering_pathways.md
-└── ALL_clusters/              # Main analysis pipeline
+└── pipeline/                  # Main analysis pipeline
     ├── src/Rscript/           # Numbered R scripts (run in order)
     │   ├── config.R           # Global parameters (colors, comparisons, paths)
     │   ├── 00_prepare_cellchat.R

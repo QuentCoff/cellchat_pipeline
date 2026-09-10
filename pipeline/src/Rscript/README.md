@@ -1,6 +1,6 @@
 # Rscript pipeline overview
 
-This folder contains the R scripts that run the CellChat analysis for the `ALL_clusters` project.
+This folder contains the R scripts that run the CellChat analysis for the `pipeline` project.
 Each script corresponds to a CellChat tutorial step and is designed to be run independently or via `../run_all.sh`.
 
 All scripts source `config.R` for paths, conditions, colors and parameters.
@@ -28,14 +28,14 @@ All scripts source `config.R` for paths, conditions, colors and parameters.
 
 ```bash
 micromamba activate env_cellchat
-Rscript /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/ALL_clusters/src/Rscript/00_prepare_cellchat.R
+Rscript /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/pipeline/src/Rscript/00_prepare_cellchat.R
 ```
 
 ## Running the full pipeline
 
 ```bash
 micromamba activate env_cellchat
-bash /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/ALL_clusters/src/run_all.sh
+bash /LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat/pipeline/src/run_all.sh
 ```
 
 ## Passing a pathway list

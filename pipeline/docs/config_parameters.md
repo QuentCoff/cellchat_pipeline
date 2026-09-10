@@ -1,4 +1,4 @@
-# Configuration guide for the ALL_clusters CellChat pipeline
+# Configuration guide for the CellChat pipeline
 
 This document describes every parameter defined in `src/Rscript/config.R`.
 Each script reads the relevant variables from this central file, so you can
@@ -10,7 +10,7 @@ parameterize the whole pipeline without editing the R scripts themselves.
 
 | Parameter | Value / example | Description |
 |-----------|-----------------|-------------|
-| `PROJECT_NAME` | `"ALL_clusters"` | Name of the analysis folder under `BASE_DIR`. |
+| `PROJECT_NAME` | `"pipeline"` | Name of the analysis folder under `BASE_DIR`. |
 | `BASE_DIR` | `"/LAB-DATA/GLiCID/users/.../Cellchat"` | Root directory of the project. All input / output paths are derived from it. |
 
 These two variables are used by every script to locate data and save results.
@@ -270,5 +270,5 @@ This script also reads `STEP12_DIR` to look for the DEG-updated CellChat object.
 - Any parameter value change in `config.R` is picked up by all scripts on the next
   run, without touching the individual R files.
 - The configuration and the pipeline are **not frozen**: you can add new options
-  to `config.R` and new scripts to `ALL_clusters/src/Rscript/` as long as they
+  to `config.R` and new scripts to `pipeline/src/Rscript/` as long as they
   source `config.R` and follow the existing directory conventions.

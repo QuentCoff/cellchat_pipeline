@@ -1,6 +1,6 @@
 #!/bin/bash
 # run_all.sh
-# Full ALL_clusters CellChat pipeline orchestrator.
+# Full CellChat pipeline orchestrator.
 #
 # What it does:
 #   Runs the complete analysis in order:
@@ -12,7 +12,7 @@
 #
 # Inputs:
 #   - Seurat RDS file: data_input/<PREP_INPUT_RDS>
-#   - Configuration file: ALL_clusters/src/Rscript/config.R
+#   - Configuration file: pipeline/src/Rscript/config.R
 #
 # Outputs:
 #   - Result/data/  : intermediate and final RData/RDS objects
@@ -30,11 +30,11 @@ if [[ "${1:-}" == "skip_p1" ]]; then
 fi
 
 BASE_DIR="/LAB-DATA/GLiCID/users/e244507t@univ-nantes.fr/Cellchat"
-P1_SCRIPT="${BASE_DIR}/ALL_clusters/src/Rscript/00_prepare_cellchat.R"
-P2_DIR="${BASE_DIR}/ALL_clusters/src/Rscript"
+P1_SCRIPT="${BASE_DIR}/pipeline/src/Rscript/00_prepare_cellchat.R"
+P2_DIR="${BASE_DIR}/pipeline/src/Rscript"
 
 echo "============================================"
-echo "  Pipeline: ALL_clusters (trimean)"
+echo "  Pipeline: pipeline (trimean)"
 echo "  Conditions: Healthy, Crypto, Immuno"
 echo "============================================"
 
@@ -109,6 +109,6 @@ Rscript "${P2_DIR}/07_net_similarity.R"
 echo ""
 echo "============================================"
 echo "  Pipeline complete!"
-echo "  Data:   ${BASE_DIR}/ALL_clusters/Result/data/"
-echo "  Plots:  ${BASE_DIR}/ALL_clusters/Result/plot/"
+echo "  Data:   ${BASE_DIR}/pipeline/Result/data/"
+echo "  Plots:  ${BASE_DIR}/pipeline/Result/plot/"
 echo "============================================"
