@@ -5,7 +5,7 @@ CellChat-based analysis pipeline for horse testicular single-cell data.
 ## Clone the repository
 
 ```bash
-git clone git@github.com:QuentCoff/cellchat_pipeline.git
+git clone https://github.com/QuentCoff/cellchat_pipeline.git
 cd cellchat_pipeline
 ```
 

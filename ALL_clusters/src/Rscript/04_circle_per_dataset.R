@@ -36,7 +36,7 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                         paste0("cellchat_object.list_", merge_prefix, ".RData"))
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step7")
+                     merged_dir, STEP7_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -69,7 +69,7 @@ cat("=== Step 7-ii: Circle plots per dataset ===\n")
 
 n <- length(object.list)
 png(file.path(out_dir, "circle_per_dataset_count.png"),
-    width = 700 * n, height = 700, res = 120)
+    width = CIRCLE_PER_DS_WIDTH * n, height = CIRCLE_PER_DS_HEIGHT, res = CIRCLE_PER_DS_RES)
 par(mfrow = c(1, n), xpd = TRUE)
 
 for (i in 1:n) {
@@ -77,7 +77,7 @@ for (i in 1:n) {
     object.list[[i]]@net$count,
     weight.scale    = TRUE,
     edge.weight.max = weight.max[2],
-    edge.width.max  = 8,
+    edge.width.max  = CIRCLE_EDGE_WIDTH_COUNT,
     title.name      = NULL,
     color.use       = celltype_colors,
     vertex.label.cex = 1.6
@@ -97,7 +97,7 @@ cat("\n=== Circle plots per dataset (strength) ===\n")
 weight.max.w <- getMaxWeight(object.list, attribute = c("idents", "weight"))
 
 png(file.path(out_dir, "circle_per_dataset_weight.png"),
-    width = 700 * n, height = 700, res = 120)
+    width = CIRCLE_PER_DS_WIDTH * n, height = CIRCLE_PER_DS_HEIGHT, res = CIRCLE_PER_DS_RES)
 par(mfrow = c(1, n), xpd = TRUE)
 
 for (i in 1:n) {
@@ -105,7 +105,7 @@ for (i in 1:n) {
     object.list[[i]]@net$weight,
     weight.scale    = TRUE,
     edge.weight.max = weight.max.w[2],
-    edge.width.max  = 6,
+    edge.width.max  = CIRCLE_EDGE_WIDTH_WEIGHT,
     title.name      = NULL,
     color.use       = celltype_colors,
     vertex.label.cex = 1.6

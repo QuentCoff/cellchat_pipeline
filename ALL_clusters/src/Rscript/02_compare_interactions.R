@@ -36,7 +36,7 @@ rdata_merged <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                           paste0("cellchat_merged_", merge_prefix, ".RData"))
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step5")
+                     merged_dir, STEP5_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -55,7 +55,7 @@ cat(paste0("Datasets: ", paste(unique(cellchat@meta$datasets), collapse = ", "),
 cat("=== Step 5A: Comparing number of interactions ===\n")
 
 png(file.path(out_dir, "compare_interactions_count.png"),
-    width = 600, height = 500, res = 120)
+    width = COMPARE_WIDTH, height = COMPARE_HEIGHT, res = COMPARE_RES)
 gg1 <- compareInteractions(cellchat, show.legend = FALSE, group = seq_along(CONDITIONS), color.use = unname(CONDITION_COLORS[CONDITIONS])) +
   ggtitle(paste0("Number of Interactions\n", paste(CONDITIONS, collapse = " vs "))) +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"))
@@ -70,7 +70,7 @@ cat(paste0("  Saved: compare_interactions_count.png\n"))
 cat("\n=== Step 5B: Comparing interaction strength ===\n")
 
 png(file.path(out_dir, "compare_interactions_weight.png"),
-    width = 600, height = 500, res = 120)
+    width = COMPARE_WIDTH, height = COMPARE_HEIGHT, res = COMPARE_RES)
 gg2 <- compareInteractions(cellchat, show.legend = FALSE, group = seq_along(CONDITIONS), measure = "weight", color.use = unname(CONDITION_COLORS[CONDITIONS])) +
   ggtitle(paste0("Interaction Strength\n", paste(CONDITIONS, collapse = " vs "))) +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"))

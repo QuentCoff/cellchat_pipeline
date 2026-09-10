@@ -52,11 +52,11 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                         paste0("cellchat_object.list_", merge_prefix, ".RData"))
 
 rdata_deg <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                       merged_dir, "step12",
+                       merged_dir, STEP12_DIR,
                        "cellchat_deg.RData")
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step15")
+                     merged_dir, STEP15_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -118,7 +118,7 @@ for (pw in pathways.show) {
       signaling   = pw,
       split.by    = "datasets",
       color.use   = CONDITION_COLORS,
-      type        = "violin"
+      type        = GENE_EXPR_VIZ_TYPE
     ) +
       plot_annotation(
         title = paste0(pw, " - Gene Expression"),
@@ -151,16 +151,16 @@ for (pw in pathways.show) {
     }
 
     ggplot2::ggsave(
-      filename = file.path(out_dir, paste0("violin_", pw, ".png")),
+      filename = file.path(out_dir, paste0(GENE_EXPR_VIZ_TYPE, "_", pw, ".png")),
       plot     = gg_violin,
-      width    = 14,
-      height   = 10,
-      dpi      = 150,
+      width    = GENE_EXPR_VIZ_WIDTH,
+      height   = GENE_EXPR_VIZ_HEIGHT,
+      dpi      = GENE_EXPR_VIZ_DPI,
       limitsize = FALSE
     )
-    cat(paste0("    Saved: violin_", pw, ".png\n"))
+    cat(paste0("    Saved: ", GENE_EXPR_VIZ_TYPE, "_", pw, ".png\n"))
   }, error = function(e) {
-    cat(paste0("    FAILED violin: ", e$message, "\n"))
+    cat(paste0("    FAILED ", GENE_EXPR_VIZ_TYPE, ": ", e$message, "\n"))
   })
 
   # --- Dot plot disabled ---

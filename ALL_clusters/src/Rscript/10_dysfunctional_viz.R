@@ -39,9 +39,9 @@ pair_paths <- function(pair) {
                              MERGED_DIR_NAME, pair_prefix,
                              paste0("cellchat_merged_", pair_prefix, ".RData")),
     step12_dir = file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                           MERGED_DIR_NAME, pair_prefix, "step12"),
+                           MERGED_DIR_NAME, pair_prefix, STEP12_DIR),
     out_dir = file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                        MERGED_DIR_NAME, pair_prefix, "step13")
+                        MERGED_DIR_NAME, pair_prefix, STEP13_DIR)
   )
 }
 
@@ -90,15 +90,17 @@ if (!file.exists(net_up_file) || !file.exists(net_down_file)) {
     pos.dataset   = pos.dataset,
     features.name = features.name,
     only.pos      = FALSE,
-    thresh.pc     = 0.1,
-    thresh.fc     = 0.05,
-    do.fast       = TRUE
+    thresh.pc     = DYSFUNCTIONAL_THRESH_PC,
+    thresh.fc     = DYSFUNCTIONAL_THRESH_FC,
+    do.fast       = DYSFUNCTIONAL_DO_FAST
   )
   net <- netMappingDEG(cellchat, features.name = features.name)
   net.up   <- subsetCommunication(cellchat, net = net, datasets = pos.dataset,
-                                 ligand.logFC = 0.05, receptor.logFC = NULL)
+                                 ligand.logFC = DYSFUNCTIONAL_LIGAND_LOGFC_UP,
+                                 receptor.logFC = NULL)
   net.down <- subsetCommunication(cellchat, net = net, datasets = dataset_names[1],
-                                 ligand.logFC = -0.05, receptor.logFC = NULL)
+                                 ligand.logFC = DYSFUNCTIONAL_LIGAND_LOGFC_DOWN,
+                                 receptor.logFC = NULL)
 } else {
   cat("  Loading Step 12 results...\n")
   net.up   <- read.csv(net_up_file,   stringsAsFactors = FALSE)
@@ -118,17 +120,17 @@ cat("=== Step 13A: Bubble plots ===\n")
 tryCatch({
   pairLR.use.up <- net.up[, "interaction_name", drop = FALSE]
   gg1 <- netVisual_bubble(cellchat, pairLR.use = pairLR.use.up,
-                          sources.use = c("Sertoli", "SSC"),
-                          targets.use = c("Sertoli", "SSC"),
+                          sources.use = DYSFUNCTIONAL_SOURCES,
+                          targets.use = DYSFUNCTIONAL_TARGETS,
                           comparison = c(1, 2), angle.x = 90,
                           remove.isolate = TRUE,
                           title.name = paste0("Up-regulated signaling in ", dataset_names[2]))
   ggplot2::ggsave(
     filename = file.path(out_dir, "bubble_up_dysfunctional.png"),
     plot     = gg1,
-    width    = 14,
-    height   = 12,
-    dpi      = 150,
+    width    = DYSVIZ_BUBBLE_WIDTH,
+    height   = DYSVIZ_BUBBLE_HEIGHT,
+    dpi      = DYSVIZ_BUBBLE_DPI,
     limitsize = FALSE
   )
   cat("  Saved: bubble_up_dysfunctional.png\n")
@@ -140,17 +142,17 @@ tryCatch({
 tryCatch({
   pairLR.use.down <- net.down[, "interaction_name", drop = FALSE]
   gg2 <- netVisual_bubble(cellchat, pairLR.use = pairLR.use.down,
-                          sources.use = c("Sertoli", "SSC"),
-                          targets.use = c("Sertoli", "SSC"),
+                          sources.use = DYSFUNCTIONAL_SOURCES,
+                          targets.use = DYSFUNCTIONAL_TARGETS,
                           comparison = c(1, 2), angle.x = 90,
                           remove.isolate = TRUE,
                           title.name = paste0("Down-regulated signaling in ", dataset_names[2]))
   ggplot2::ggsave(
     filename = file.path(out_dir, "bubble_down_dysfunctional.png"),
     plot     = gg2,
-    width    = 14,
-    height   = 12,
-    dpi      = 150,
+    width    = DYSVIZ_BUBBLE_WIDTH,
+    height   = DYSVIZ_BUBBLE_HEIGHT,
+    dpi      = DYSVIZ_BUBBLE_DPI,
     limitsize = FALSE
   )
   cat("  Saved: bubble_down_dysfunctional.png\n")
@@ -167,10 +169,10 @@ cat("\n=== Step 13B: Chord diagrams ===\n")
 # --- 13B-i: Upregulated in dataset 2 ---
 tryCatch({
   pdf(file.path(out_dir, "chord_up.pdf"),
-      width = 10, height = 10)
+      width = DYSVIZ_CHORD_SIZE, height = DYSVIZ_CHORD_SIZE)
   netVisual_chord_gene(object.list[[2]],
-    sources.use = c("Sertoli", "SSC"),
-    targets.use = c("Sertoli", "SSC"),
+    sources.use = DYSFUNCTIONAL_SOURCES,
+    targets.use = DYSFUNCTIONAL_TARGETS,
     slot.name = "net", net = net.up,
     lab.cex = 0.8, small.gap = 3.5,
     title.name = paste0("Up-regulated signaling in ", dataset_names[2]))
@@ -183,10 +185,10 @@ tryCatch({
 # --- 13B-ii: Downregulated in dataset 2 (visualized in dataset 1) ---
 tryCatch({
   pdf(file.path(out_dir, "chord_down.pdf"),
-      width = 10, height = 10)
+      width = DYSVIZ_CHORD_SIZE, height = DYSVIZ_CHORD_SIZE)
   netVisual_chord_gene(object.list[[1]],
-    sources.use = c("Sertoli", "SSC"),
-    targets.use = c("Sertoli", "SSC"),
+    sources.use = DYSFUNCTIONAL_SOURCES,
+    targets.use = DYSFUNCTIONAL_TARGETS,
     slot.name = "net", net = net.down,
     lab.cex = 0.8, small.gap = 3.5,
     title.name = paste0("Down-regulated signaling in ", dataset_names[2]))
@@ -205,7 +207,7 @@ cat("\n=== Step 13C: Wordcloud plots ===\n")
 # --- 13C-i: Enriched ligands in dataset 2 (up) ---
 tryCatch({
   pdf(file.path(out_dir, "wordcloud_up.pdf"),
-      width = 10, height = 8)
+      width = DYSVIZ_WORDCLOUD_WIDTH, height = DYSVIZ_WORDCLOUD_HEIGHT)
   computeEnrichmentScore(net.up, species = "human")
   dev.off()
   cat("  Saved: wordcloud_up.pdf\n")
@@ -216,7 +218,7 @@ tryCatch({
 # --- 13C-ii: Enriched ligands in dataset 1 (down) ---
 tryCatch({
   pdf(file.path(out_dir, "wordcloud_down.pdf"),
-      width = 10, height = 8)
+      width = DYSVIZ_WORDCLOUD_WIDTH, height = DYSVIZ_WORDCLOUD_HEIGHT)
   computeEnrichmentScore(net.down, species = "human")
   dev.off()
   cat("  Saved: wordcloud_down.pdf\n")

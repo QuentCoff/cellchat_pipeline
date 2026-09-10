@@ -46,7 +46,7 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                         paste0("cellchat_object.list_", merge_prefix, ".RData"))
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step14")
+                     merged_dir, STEP14_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -96,23 +96,23 @@ for (pw in pathways.show) {
 
     nplots <- length(obj_subset)
     if (nplots == 1) {
-      plot_w <- 900
-      plot_h <- 900
+      plot_w <- PATHWAY_VIZ_WIDTH_1
+      plot_h <- PATHWAY_VIZ_HEIGHT_1
       mfrow_layout <- c(1, 1)
     } else if (nplots == 2) {
-      plot_w <- 1800
-      plot_h <- 900
+      plot_w <- PATHWAY_VIZ_WIDTH_2
+      plot_h <- PATHWAY_VIZ_HEIGHT_2
       mfrow_layout <- c(1, 2)
     } else {
-      # 3 or more: use 2 rows, 900 px per plot
+      # 3 or more: use 2 rows, one panel width per plot
       ncols <- ceiling(nplots / 2)
-      plot_w <- 900 * ncols
-      plot_h <- 1800
+      plot_w <- PATHWAY_VIZ_WIDTH_N * ncols
+      plot_h <- PATHWAY_VIZ_HEIGHT_N
       mfrow_layout <- c(2, ncols)
     }
 
     png(file.path(out_dir, paste0("circle_", pw, ".png")),
-        width = plot_w, height = plot_h, res = 150)
+        width = plot_w, height = plot_h, res = PATHWAY_VIZ_RES)
     par(mfrow = mfrow_layout, xpd = TRUE, oma = c(0, 0, 2, 0), mar = c(2, 2, 2, 2))
 
     for (i in idx_valid) {

@@ -36,11 +36,11 @@ rdata_merged <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                           paste0("cellchat_merged_", merge_prefix, ".RData"))
 
 rdata_deg <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                       merged_dir, "step12",
+                       merged_dir, STEP12_DIR,
                        "cellchat_deg.RData")
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step16")
+                     merged_dir, STEP16_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 

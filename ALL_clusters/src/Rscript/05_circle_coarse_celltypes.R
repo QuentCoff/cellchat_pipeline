@@ -44,7 +44,7 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                         paste0("cellchat_object.list_", merge_prefix, ".RData"))
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step8")
+                     merged_dir, STEP8_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -68,13 +68,11 @@ cell_levels <- levels(object.list[[1]]@idents)
 cat(paste0("Cell type order: ", paste(cell_levels, collapse = ", "), "\n"))
 
 group.cellType <- ifelse(
-  cell_levels == "SSC", "SSC",
-  ifelse(cell_levels %in% c("Spermatocyte", "Spermatid"), "Germ",
-  ifelse(cell_levels == "Sertoli", "Sertoli",
-  ifelse(cell_levels == "Leydig", "Leydig",
-         "Somatic")))
+  cell_levels %in% names(COARSE_GROUP_MAP),
+  COARSE_GROUP_MAP[cell_levels],
+  COARSE_GROUP_DEFAULT
 )
-group.cellType <- factor(group.cellType, levels = c("SSC", "Germ", "Sertoli", "Leydig", "Somatic"))
+group.cellType <- factor(group.cellType, levels = COARSE_GROUP_LEVELS)
 
 cat(paste0("Grouping:\n"))
 for (i in seq_along(cell_levels)) {
@@ -108,7 +106,7 @@ weight.max <- getMaxWeight(
 n <- length(object.list)
 
 png(file.path(out_dir, "circle_coarse_per_dataset_count.png"),
-    width = 600 * n, height = 600, res = 120)
+    width = COARSE_WIDTH * n, height = COARSE_HEIGHT, res = COARSE_RES)
 par(mfrow = c(1, n), xpd = TRUE)
 
 for (i in 1:n) {
@@ -117,7 +115,7 @@ for (i in 1:n) {
     weight.scale    = TRUE,
     label.edge      = TRUE,
     edge.weight.max = weight.max[3],
-    edge.width.max  = 12,
+    edge.width.max  = COARSE_EDGE_WIDTH,
     title.name      = paste0("Number of interactions - ", names(object.list)[i])
   )
 }
@@ -131,14 +129,14 @@ cat(paste0("  Saved: circle_coarse_per_dataset_count.png\n"))
 if (length(object.list) == 2) {
   cat("\n=== Step 8-iv: Differential number of interactions (coarse) ===\n")
 
-  png(file.path(out_dir, "diff_coarse_count.png"), width = 700, height = 600, res = 120)
+  png(file.path(out_dir, "diff_coarse_count.png"), width = COARSE_WIDTH, height = COARSE_HEIGHT, res = COARSE_RES)
   netVisual_diffInteraction(cellchat, weight.scale = TRUE, measure = "count.merged", label.edge = TRUE)
   dev.off()
   cat(paste0("  Saved: diff_coarse_count.png\n"))
 
   cat("\n=== Step 8-v: Differential interaction strength (coarse) ===\n")
 
-  png(file.path(out_dir, "diff_coarse_weight.png"), width = 700, height = 600, res = 120)
+  png(file.path(out_dir, "diff_coarse_weight.png"), width = COARSE_WIDTH, height = COARSE_HEIGHT, res = COARSE_RES)
   netVisual_diffInteraction(cellchat, weight.scale = TRUE, measure = "weight.merged", label.edge = TRUE)
   dev.off()
   cat(paste0("  Saved: diff_coarse_weight.png\n\n"))

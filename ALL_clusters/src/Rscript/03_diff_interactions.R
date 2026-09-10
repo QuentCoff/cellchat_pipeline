@@ -38,7 +38,7 @@ pair_paths <- function(pair) {
                              MERGED_DIR_NAME, pair_prefix,
                              paste0("cellchat_merged_", pair_prefix, ".RData")),
     out_dir = file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                        MERGED_DIR_NAME, pair_prefix, "step6")
+                        MERGED_DIR_NAME, pair_prefix, STEP6_DIR)
   )
 }
 
@@ -129,11 +129,11 @@ if (file.exists(hc_rdata) && file.exists(hi_rdata)) {
   celltype_colors <- celltype_colors[!is.na(celltype_colors)]
 
   combined_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                            MERGED_DIR_NAME, "step6")
+                            MERGED_DIR_NAME, STEP6_DIR)
   dir.create(combined_dir, showWarnings = FALSE, recursive = TRUE)
 
   png(file.path(combined_dir, "diff_circle_count_combined.png"),
-      width = 1800, height = 800, res = 120)
+      width = DIFF_CIRCLE_WIDTH, height = DIFF_CIRCLE_HEIGHT, res = DIFF_CIRCLE_RES)
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0), xpd = TRUE)
   netVisual_diffInteraction(cellchat_hc, weight.scale = TRUE, title.name = "Healthy vs crypto", color.use = celltype_colors)
   netVisual_diffInteraction(cellchat_hi, weight.scale = TRUE, title.name = "Healthy vs Immuno", color.use = celltype_colors)
@@ -142,7 +142,7 @@ if (file.exists(hc_rdata) && file.exists(hi_rdata)) {
   cat("  Saved: diff_circle_count_combined.png\n")
 
   png(file.path(combined_dir, "diff_circle_weight_combined.png"),
-      width = 1800, height = 800, res = 120)
+      width = DIFF_CIRCLE_WIDTH, height = DIFF_CIRCLE_HEIGHT, res = DIFF_CIRCLE_RES)
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0), xpd = TRUE)
   netVisual_diffInteraction(cellchat_hc, weight.scale = TRUE, measure = "weight", title.name = "Healthy vs crypto", color.use = celltype_colors)
   netVisual_diffInteraction(cellchat_hi, weight.scale = TRUE, measure = "weight", title.name = "Healthy vs Immuno", color.use = celltype_colors)

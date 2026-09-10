@@ -46,14 +46,17 @@ base_dir <- BASE_DIR
 # ============================================
 
 cat("=== Loading Seurat object ===\n")
-seurat_obj <- readRDS(file.path(base_dir, "data_input", "Final_Annotated_Object_HUMAN.rds"))
+seurat_obj <- readRDS(file.path(base_dir, "data_input", PREP_INPUT_RDS))
 
 cat(paste0("Total cells: ", ncol(seurat_obj), "\n"))
-cat("Available detailed_group values:\n")
-print(table(seurat_obj$detailed_group))
+cat(paste0("Available ", SEURAT_CONDITION_COL, " values:\n"))
+print(table(seurat_obj@meta.data[[SEURAT_CONDITION_COL]]))
 
 cat("\n=== Configuring CellChatDB ===\n")
-CellChatDB <- CellChatDB.human  # includes v1 + v2 (3233 interactions in total)
+CellChatDB <- switch(PREP_CELLCHAT_DB,
+                       human = CellChatDB.human,
+                       mouse = CellChatDB.mouse,
+                       stop("Unknown PREP_CELLCHAT_DB: ", PREP_CELLCHAT_DB))
 showDatabaseCategory(CellChatDB)
 glimpse(CellChatDB$interaction)
 
@@ -77,19 +80,19 @@ for (filter_group in CONDITIONS) {
     cat(paste0("Groups included: ", paste(filter_values, collapse = ", "), "\n"))
   }
 
-  cells_use <- colnames(seurat_obj)[seurat_obj$detailed_group %in% filter_values]
+  cells_use <- colnames(seurat_obj)[seurat_obj@meta.data[[SEURAT_CONDITION_COL]] %in% filter_values]
 
   if (length(cells_use) == 0) {
-    stop(paste0("No cells found for detailed_group in '", paste(filter_values, collapse = ", "), "'\n"))
+    stop(paste0("No cells found for ", SEURAT_CONDITION_COL, " in '", paste(filter_values, collapse = ", "), "'\n"))
   }
 
   seurat_filtered <- subset(seurat_obj, cells = cells_use)
   cat(paste0("Cells after condition filtering: ", ncol(seurat_filtered), "\n"))
   cat("Cell types in filtered data:\n")
-  print(table(seurat_filtered$cell_type))
+  print(table(seurat_filtered@meta.data[[SEURAT_CELL_TYPE_COL]]))
 
   cat("\n=== Creating CellChat object (all cell types) ===\n")
-  cellchat <- createCellChat(object = seurat_filtered, group.by = "cell_type", assay = "RNA")
+  cellchat <- createCellChat(object = seurat_filtered, group.by = SEURAT_CELL_TYPE_COL, assay = "RNA")
 
   cat(paste0("Cell groups: ", length(levels(cellchat@idents)), "\n"))
   cat(paste0("Groups: ", paste(levels(cellchat@idents), collapse = ", "), "\n"))
@@ -105,13 +108,13 @@ for (filter_group in CONDITIONS) {
   cat("\n=== Inference ===\n")
   cellchat <- computeCommunProb(
     cellchat,
-    type            = "truncatedMean",
-    trim            = 0.30,
-    raw.use         = TRUE,
-    population.size = TRUE
+    type            = PREP_PROB_TYPE,
+    trim            = PREP_PROB_TRIM,
+    raw.use         = PREP_RAW_USE,
+    population.size = PREP_POPULATION_SIZE
   )
 
-  cellchat <- filterCommunication(cellchat, min.cells = 10)
+  cellchat <- filterCommunication(cellchat, min.cells = PREP_MIN_CELLS)
   cellchat <- computeCommunProbPathway(cellchat)
   cellchat <- aggregateNet(cellchat)
 

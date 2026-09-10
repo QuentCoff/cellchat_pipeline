@@ -41,11 +41,11 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                         paste0("cellchat_object.list_", merge_prefix, ".RData"))
 
 rdata_deg <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                       merged_dir, "step12",
+                       merged_dir, STEP12_DIR,
                        "cellchat_deg.RData")
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step11")
+                     merged_dir, STEP11_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -81,12 +81,10 @@ cat(paste0("Pathways union: ", n_pathways, " | L-R pairs union: ", n_lr, "\n\n")
 n_datasets <- length(object.list)
 width_heatmap <- max(7, 7 * n_datasets * 0.6)
 
-# Helper: ~0.25 in per pathway (min 6, capped at 40)
-height_pathways <- min(40, max(6, n_pathways * 0.25))
-# L-R pairs are usually 5-10x more numerous
-height_lr       <- min(60, max(8, n_lr * 0.18))
-# Heatmap row height ~0.3 in per pathway
-height_heatmap  <- min(40, max(8, n_pathways * 0.30))
+# Dynamic heights per content type (min/max in inches)
+height_pathways <- min(40, max(6, n_pathways * RANKNET_HEIGHT_PER_PW))
+height_lr       <- min(60, max(8, n_lr * HEATMAP_HEIGHT_PER_LR))
+height_heatmap  <- min(40, max(8, n_pathways * HEATMAP_HEIGHT_PER_PW))
 
 cat(sprintf("Plot heights: pathways=%.1f in | LR=%.1f in | heatmap=%.1f in\n\n",
             height_pathways, height_lr, height_heatmap))
@@ -153,7 +151,7 @@ for (pair in PAIRWISE) {
     ggplot2::ggsave(
       filename = file.path(out_dir, filename),
       plot     = gg,
-      width    = 10,
+      width    = RANKNET_WIDTH,
       height   = height_pathways_pair,
       dpi      = 150,
       limitsize = FALSE
@@ -206,7 +204,7 @@ tryCatch({
   ggplot2::ggsave(
     filename = file.path(out_dir, "ranknet_pathways_grouped.png"),
     plot     = gg,
-    width    = 10,
+    width    = RANKNET_WIDTH,
     height   = height_pathways,
     dpi      = 150,
     limitsize = FALSE
@@ -265,9 +263,9 @@ if (!has_complexheatmap) {
     })
   }
 
-  draw_heatmaps("outgoing", "heatmap_outgoing.pdf")
-  draw_heatmaps("incoming", "heatmap_incoming.pdf")
-  draw_heatmaps("all", "heatmap_all.pdf")
+  for (pattern in HEATMAP_PATTERNS) {
+    draw_heatmaps(pattern, paste0("heatmap_", pattern, ".pdf"))
+  }
 }
 
 cat("\n--- Procedure 2 Step 11 complete ---\n")

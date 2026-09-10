@@ -7,7 +7,7 @@
 # Usage:
 #   Rscript 07_net_similarity.R
 #
-# Configuration is read from config.R. Change sim_type below to "structural" if desired.
+# Configuration is read from config.R. Set NET_SIM_TYPE to "structural" for structural similarity.
 
 suppressPackageStartupMessages({
   library(CellChat)
@@ -16,7 +16,6 @@ suppressPackageStartupMessages({
 })
 
 options(stringsAsFactors = FALSE)
-set.seed(6)
 
 # ============================================
 # CONFIGURATION
@@ -32,7 +31,8 @@ if (length(file_arg) == 1) {
 source(file.path(script_dir, "config.R"))
 
 base_dir <- BASE_DIR
-sim_type <- "functional"  # "functional" or "structural"
+sim_type <- NET_SIM_TYPE
+set.seed(NET_SIM_SEED)
 
 pair_paths <- function(pair) {
   pair_prefix <- paste(tolower(pair), collapse = "_vs_")
@@ -43,7 +43,7 @@ pair_paths <- function(pair) {
                              MERGED_DIR_NAME, pair_prefix,
                              paste0("cellchat_merged_", pair_prefix, ".RData")),
     out_dir = file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                        MERGED_DIR_NAME, "step10", sub_dir)
+                        MERGED_DIR_NAME, STEP10_DIR, sub_dir)
   )
 }
 
@@ -70,7 +70,7 @@ run_pair <- function(pair) {
 
   # Step 10-ii: Joint manifold learning
   cat("=== Step 10-ii: netEmbedding ===\n")
-  cellchat <- netEmbedding(cellchat, type = sim_type, umap.method = "uwot")
+  cellchat <- netEmbedding(cellchat, type = sim_type, umap.method = NET_SIM_UMAP_METHOD)
   cat("  Done.\n\n")
 
   # Step 10-iii: Joint clustering
@@ -109,9 +109,9 @@ run_pair <- function(pair) {
     ggplot2::ggsave(
       filename = file.path(paths$out_dir, paste0("embedding_", sim_type, ".png")),
       plot     = gg_emb,
-      width    = 10,
-      height   = 8,
-      dpi      = 150
+      width    = NET_SIM_WIDTH,
+      height   = NET_SIM_HEIGHT,
+      dpi      = NET_SIM_DPI
     )
     cat(paste0("  Saved: embedding_", sim_type, ".png\n\n"))
   }, error = function(e) {
@@ -129,9 +129,9 @@ run_pair <- function(pair) {
     ggplot2::ggsave(
       filename = file.path(paths$out_dir, paste0("embedding_zoomin_", sim_type, ".png")),
       plot     = gg_zoom,
-      width    = 10,
-      height   = 8,
-      dpi      = 150
+      width    = NET_SIM_WIDTH,
+      height   = NET_SIM_HEIGHT,
+      dpi      = NET_SIM_DPI
     )
     cat(paste0("  Saved: embedding_zoomin_", sim_type, ".png\n\n"))
   }, error = function(e) {
@@ -182,9 +182,9 @@ run_pair <- function(pair) {
   ggplot2::ggsave(
     filename = file.path(paths$out_dir, paste0("rank_similarity_", sim_type, ".png")),
     plot     = gg_rank,
-    width    = 8,
-    height   = 6,
-    dpi      = 150
+    width    = NET_SIM_WIDTH,
+    height   = NET_SIM_HEIGHT,
+    dpi      = NET_SIM_DPI
   )
   cat(paste0("  Saved: rank_similarity_", sim_type, ".png\n\n"))
 

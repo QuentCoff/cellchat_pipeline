@@ -51,7 +51,7 @@ pair_paths <- function(pair) {
                            MERGED_DIR_NAME, pair_prefix,
                            paste0("cellchat_object.list_", pair_prefix, ".RData")),
     out_dir = file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                        MERGED_DIR_NAME, pair_prefix, "step12")
+                        MERGED_DIR_NAME, pair_prefix, STEP12_DIR)
   )
 }
 
@@ -78,18 +78,23 @@ run_pair <- function(pair) {
   cat(paste0("Datasets: ", paste(dataset_names, collapse = ", "), "\n"))
   cat(paste0("pos.dataset (ref): ", dataset_names[2], "\n\n"))
 
-# Cell-type indices for Sertoli → Leydig / SSC analysis
+# Resolve source/target cell-type indices from config
 idents <- levels(cellchat@idents$joint)
-sertoli_idx <- match("Sertoli", idents)
-leydig_idx  <- match("Leydig",  idents)
-ssc_idx     <- match("SSC",     idents)
+source_idx <- match(DYSFUNCTIONAL_SOURCES, idents)
+names(source_idx) <- DYSFUNCTIONAL_SOURCES
+target_idx <- match(DYSFUNCTIONAL_TARGETS, idents)
+names(target_idx) <- DYSFUNCTIONAL_TARGETS
 
-if (any(is.na(c(sertoli_idx, leydig_idx, ssc_idx)))) {
-  stop("One or more cell types (Sertoli, Leydig, SSC) not found in idents\n")
+missing <- c(DYSFUNCTIONAL_SOURCES[is.na(source_idx)], DYSFUNCTIONAL_TARGETS[is.na(target_idx)])
+if (length(missing) > 0) {
+  stop(paste0("Cell type(s) not found in idents: ", paste(unique(missing), collapse = ", "), "\n"))
 }
 
-cat(paste0("Cell-type indices — Sertoli: ", sertoli_idx,
-           ", Leydig: ", leydig_idx, ", SSC: ", ssc_idx, "\n\n"))
+cat(paste0("Source indices — ",
+           paste(names(source_idx), source_idx, sep = ": ", collapse = ", "),
+           " | Target indices — ",
+           paste(names(target_idx), target_idx, sep = ": ", collapse = ", "),
+           "\n\n"))
 
 # ============================================
 # Step 12A: Bubble plots — communication probabilities
@@ -100,8 +105,8 @@ cat("=== Step 12A-i: Bubble plot — all communications ===\n")
 
 tryCatch({
   gg <- netVisual_bubble(cellchat,
-                       sources.use = c(sertoli_idx, ssc_idx),
-                       targets.use = c(sertoli_idx, ssc_idx),
+                       sources.use = source_idx,
+                       targets.use = target_idx,
                        comparison = c(1, 2), angle.x = 45)
   sz <- bubble_size(gg)
   cat(paste0("  Dynamic size: ", round(sz$width, 1), " x ", round(sz$height, 1), " in\n"))
@@ -123,8 +128,8 @@ cat("\n=== Step 12A-ii: Bubble plot — up-regulated in dataset 2 ===\n")
 
 tryCatch({
   gg <- netVisual_bubble(cellchat,
-                       sources.use = c(sertoli_idx, ssc_idx),
-                       targets.use = c(sertoli_idx, ssc_idx),
+                       sources.use = source_idx,
+                       targets.use = target_idx,
                        comparison = c(1, 2), max.dataset = 2,
                        title.name = paste0("Increased signaling in ", dataset_names[2]),
                        angle.x = 45, remove.isolate = TRUE)
@@ -148,8 +153,8 @@ cat("\n=== Step 12A-iii: Bubble plot — down-regulated in dataset 2 ===\n")
 
 tryCatch({
   gg <- netVisual_bubble(cellchat,
-                       sources.use = c(sertoli_idx, ssc_idx),
-                       targets.use = c(sertoli_idx, ssc_idx),
+                       sources.use = source_idx,
+                       targets.use = target_idx,
                        comparison = c(1, 2), max.dataset = 1,
                        title.name = paste0("Decreased signaling in ", dataset_names[2]),
                        angle.x = 45, remove.isolate = TRUE)
@@ -178,7 +183,7 @@ pos.dataset   <- dataset_names[2]  # dataset 2 = condition test
 features.name <- pos.dataset
 
 cat(paste0("  pos.dataset: ", pos.dataset, "\n"))
-cat("  Running identifyOverExpressedGenes (fast mode with presto)...\n")
+cat(paste0("  Running identifyOverExpressedGenes (do.fast = ", DYSFUNCTIONAL_DO_FAST, ")...\n"))
 
 tryCatch({
   cellchat <- identifyOverExpressedGenes(
@@ -187,9 +192,9 @@ tryCatch({
     pos.dataset      = pos.dataset,
     features.name    = features.name,
     only.pos         = FALSE,
-    thresh.pc        = 0.1,
-    thresh.fc        = 0.05,
-    do.fast          = TRUE
+    thresh.pc        = DYSFUNCTIONAL_THRESH_PC,
+    thresh.fc        = DYSFUNCTIONAL_THRESH_FC,
+    do.fast          = DYSFUNCTIONAL_DO_FAST
   )
   cat("  Done.\n")
 
@@ -202,9 +207,9 @@ tryCatch({
   cat(paste0("\n  Extracting up-regulated L-R pairs in ", pos.dataset, "...\n"))
   net.up <- subsetCommunication(
     cellchat, net = net, datasets = pos.dataset,
-    sources.use = c("Sertoli", "SSC"),
-    targets.use = c("Sertoli", "SSC"),
-    ligand.logFC = 0.05, receptor.logFC = NULL
+    sources.use = DYSFUNCTIONAL_SOURCES,
+    targets.use = DYSFUNCTIONAL_TARGETS,
+    ligand.logFC = DYSFUNCTIONAL_LIGAND_LOGFC_UP, receptor.logFC = NULL
   )
   write.csv(net.up, file.path(out_dir, "net_up.csv"), row.names = FALSE)
   cat(paste0("  Saved: net_up.csv (n=", nrow(net.up), ")\n"))
@@ -213,9 +218,9 @@ tryCatch({
   cat(paste0("\n  Extracting down-regulated L-R pairs in ", pos.dataset, "...\n"))
   net.down <- subsetCommunication(
     cellchat, net = net, datasets = dataset_names[1],
-    sources.use = c("Sertoli", "SSC"),
-    targets.use = c("Sertoli", "SSC"),
-    ligand.logFC = -0.05, receptor.logFC = NULL
+    sources.use = DYSFUNCTIONAL_SOURCES,
+    targets.use = DYSFUNCTIONAL_TARGETS,
+    ligand.logFC = DYSFUNCTIONAL_LIGAND_LOGFC_DOWN, receptor.logFC = NULL
   )
   write.csv(net.down, file.path(out_dir, "net_down.csv"), row.names = FALSE)
   cat(paste0("  Saved: net_down.csv (n=", nrow(net.down), ")\n"))
@@ -235,7 +240,7 @@ tryCatch({
     df.up <- findEnrichedSignaling(
       object.list[[2]],
       features = gene.up[1:min(10, length(gene.up))],
-      idents   = c("Sertoli", "SSC"),
+      idents   = DYSFUNCTIONAL_SOURCES,
       pattern  = "outgoing"
     )
     write.csv(df.up, file.path(out_dir, "enriched_signaling_up.csv"), row.names = FALSE)

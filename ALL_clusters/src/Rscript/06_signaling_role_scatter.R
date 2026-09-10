@@ -41,7 +41,7 @@ rdata_merged <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                           paste0("cellchat_merged_", merge_prefix, ".RData"))
 
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
-                     merged_dir, "step9")
+                     merged_dir, STEP9_DIR)
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -128,9 +128,9 @@ gg_combined <- patchwork::wrap_plots(plots = gg) +
 ggplot2::ggsave(
   filename = file.path(out_dir, "signaling_role_scatter.png"),
   plot     = gg_combined,
-  width    = 5 * length(object.list),
-  height   = 5,
-  dpi      = 150
+  width    = SIGNALING_ROLE_WIDTH_PER_PANEL * length(object.list),
+  height   = SIGNALING_ROLE_HEIGHT,
+  dpi      = SIGNALING_ROLE_DPI
 )
 cat(paste0("  Saved: signaling_role_scatter.png\n\n"))
 
@@ -140,7 +140,7 @@ cat(paste0("  Saved: signaling_role_scatter.png\n\n"))
 
 cat("=== Step 9B: Signaling changes for specific cell types ===\n")
 
-cell_types <- c("Sertoli", "Leydig", "SSC")
+cell_types <- SIGNALING_ROLE_CELL_TYPES
 
 # If the loaded object already contains exactly two groups, run 9B directly.
 # Otherwise, run 9B for each pairwise comparison defined in config.R.
