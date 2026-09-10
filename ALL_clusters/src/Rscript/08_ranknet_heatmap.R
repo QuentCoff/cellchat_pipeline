@@ -1,7 +1,26 @@
 #!/usr/bin/env Rscript
 # 08_ranknet_heatmap.R
 # CellChat Procedure 2 Step 11: Identify altered signaling with distinct interaction strength
-# Multi-group version.
+#
+# What it does:
+#   Loads the multi-group merged CellChat object and object list, computes dynamic
+#   plot sizes from pathway/L-R counts, and produces:
+#     - per-pairwise rankNet stacked bar charts (disabled: global no-stat and L-R stat),
+#     - global grouped rankNet chart,
+#     - outgoing/incoming/all signaling heatmaps via ComplexHeatmap.
+#
+# Inputs:
+#   - Multi-group merged RData and object list RData
+#   - Pairwise merged RData files for per-pairwise rankNet plots
+#   - Configuration file: config.R
+#
+# Outputs (in Result/plot/<MERGED_DIR_NAME>/step11/):
+#   - ranknet_pathways_grouped.png
+#   - ranknet_pathways_stacked_<pair>.png (per pairwise comparison)
+#   - heatmap_<pattern>.pdf for each pattern in HEATMAP_PATTERNS
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 09_bubble_dysfunctional.R
 #
 # Usage:
 #   Rscript 08_ranknet_heatmap.R
@@ -42,8 +61,9 @@ rdata_list <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
 
 rdata_deg <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
                        merged_dir, STEP12_DIR,
-                       "cellchat_deg.RData")
+                       "cellchat_deg.RData")  # optional DEG-updated object
 
+# Output folder for Step 11 plots.
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
                      merged_dir, STEP11_DIR)
 
@@ -61,11 +81,13 @@ load(rdata_merged)  # loads 'cellchat'
 load(rdata_list)    # loads 'object.list'
 cat(paste0("Datasets: ", paste(unique(cellchat@meta$datasets), collapse = ", "), "\n\n"))
 
+# Indices for the multi-group rankNet comparison.
 comparison_idx <- seq_along(CONDITIONS)
 
 # ============================================
 # Dynamic plot sizing based on pathway / L-R counts
 # ============================================
+# Union of significant pathways across all conditions.
 pathway.union <- Reduce(union, lapply(object.list, function(x) x@netP$pathways))
 n_pathways <- length(pathway.union)
 
@@ -77,7 +99,7 @@ n_lr <- length(Reduce(union, lr_all))
 
 cat(paste0("Pathways union: ", n_pathways, " | L-R pairs union: ", n_lr, "\n\n"))
 
-# Width per heatmap
+# Width per heatmap panel (scales with number of datasets).
 n_datasets <- length(object.list)
 width_heatmap <- max(7, 7 * n_datasets * 0.6)
 
@@ -162,10 +184,11 @@ for (pair in PAIRWISE) {
   })
 }
 
-# Reload multi-group objects for the remaining steps
-cat("  Reloading multi-group merged object\n")
-load(rdata_merged)  # loads 'cellchat'
-load(rdata_list)    # loads 'object.list'
+  # The pairwise loop above replaced the multi-group objects in memory.
+  # Reload them before continuing with the multi-group heatmaps.
+  cat("  Reloading multi-group merged object\n")
+  load(rdata_merged)  # loads 'cellchat'
+  load(rdata_list)    # loads 'object.list'
 
 # --- 11A-iii: Stacked bar chart with paired Wilcoxon test (L-R pairs) [DISABLED] ---
 # cat("\n=== Step 11A-iii: rankNet L-R pairs stacked (Wilcoxon) ===\n")
@@ -211,7 +234,7 @@ tryCatch({
   )
   cat("  Saved: ranknet_pathways_grouped.png\n")
 }, error = function(e) {
-  cat(paste0("  FAILED: ", e$message, "\n"))
+  cat(paste0("  FAILED ", e$message, "\n"))
 })
 
 # ============================================
@@ -221,7 +244,7 @@ tryCatch({
 cat("\n=== Step 11B: ComplexHeatmap signaling patterns ===\n")
 
 # Pre-requisite: compute network centrality scores for each object
-# (required by netAnalysis_signalingRole_heatmap)
+# (required by netAnalysis_signalingRole_heatmap).
 cat("  Pre-processing: netAnalysis_computeCentrality on object.list\n")
 object.list <- lapply(object.list, function(x) {
   netAnalysis_computeCentrality(x, slot.name = "netP")
@@ -238,7 +261,7 @@ if (!has_complexheatmap) {
 
   cat(paste0("  Union pathways: ", length(pathway.union), "\n"))
 
-  # Helper to draw heatmaps for all datasets in one PDF
+  # Helper: draw outgoing/incoming/all signaling heatmaps for all datasets in one PDF.
   draw_heatmaps <- function(pattern, filename) {
     cat(paste0("\n=== Step 11B: ", pattern, " signaling heatmaps ===\n"))
     tryCatch({
@@ -263,6 +286,7 @@ if (!has_complexheatmap) {
     })
   }
 
+  # Generate one heatmap PDF for each pattern defined in config.R$HEATMAP_PATTERNS.
   for (pattern in HEATMAP_PATTERNS) {
     draw_heatmaps(pattern, paste0("heatmap_", pattern, ".pdf"))
   }

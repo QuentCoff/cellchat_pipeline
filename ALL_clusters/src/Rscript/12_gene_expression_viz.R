@@ -1,7 +1,26 @@
 #!/usr/bin/env Rscript
 # 12_gene_expression_viz.R
 # CellChat Procedure 2 Step 15: Plot gene expression distribution of signaling genes
-# Multi-group version: split by dataset.
+#
+# What it does:
+#   Loads the merged CellChat object (preferring the DEG-updated version) and produces
+#   violin plots of gene expression distribution for signaling genes, split by dataset.
+#   If pathway names are passed as arguments, only those pathways are visualized;
+#   otherwise all significant pathways are processed.
+#
+# Inputs:
+#   - Merged or DEG CellChat RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_merged_<MERGE_PREFIX>.RData
+#     Result/plot/<MERGED_DIR_NAME>/step12/cellchat_deg.RData (preferred)
+#   - Multi-group object list RData (for pathway resolution when DEG object has no pathways)
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Violin plots in Result/plot/<MERGED_DIR_NAME>/step15/:
+#       <GENE_EXPR_VIZ_TYPE>_<pathway>.png
+#
+# Previous step: 09_bubble_dysfunctional.R (optional, for DEG object)
+# Next step: 13_export_objects.R
 #
 # Usage:
 #   Rscript 12_gene_expression_viz.R [pathway1,pathway2,...]
@@ -35,8 +54,8 @@ base_dir <- BASE_DIR
 merge_prefix <- MERGE_PREFIX
 merged_dir <- MERGED_DIR_NAME
 
-# Default: all pathways from the merged object (set after loading)
-# User can override with: Rscript 12_gene_expression_viz.R CXCL,BMP
+# Command-line argument: comma-separated list of pathways to visualize.
+# If not provided, all significant pathways are used.
 args <- commandArgs(trailingOnly = TRUE)
 user_pathways <- NULL
 if (length(args) >= 1) {
@@ -60,7 +79,7 @@ out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# Prefer DEG-updated object if available (has expression data embedded)
+# Prefer DEG-updated object (contains expression values needed for gene plots).
 if (file.exists(rdata_deg)) {
   cat("=== Loading DEG-updated CellChat object ===\n")
   load(rdata_deg)  # loads 'cellchat'
@@ -71,7 +90,7 @@ if (file.exists(rdata_deg)) {
   stop(paste0("No CellChat object found. Run previous steps first.\n"))
 }
 
-# Load object.list for pathway resolution (DEG object may have empty netP$pathways)
+# Load object.list for pathway resolution if the DEG object has empty netP$pathways.
 if (file.exists(rdata_list)) {
   load(rdata_list)  # loads 'object.list'
 }
@@ -79,7 +98,7 @@ if (file.exists(rdata_list)) {
 dataset_names <- levels(cellchat@meta$datasets)
 cat(paste0("Datasets in object: ", paste(dataset_names, collapse = ", "), "\n"))
 
-# Resolve pathway list: user-specified OR union of all datasets' pathways
+# Resolve pathway list: user-specified, OR union from object.list, OR from merged object.
 if (!is.null(user_pathways)) {
   pathways.show <- user_pathways
 } else if (exists("object.list") && length(object.list) >= 1) {
@@ -105,13 +124,13 @@ cat("=== Step 15: Gene expression violin plots ===\n")
 for (pw in pathways.show) {
   cat(paste0("  Pathway: ", pw, "\n"))
 
-  # Check pathway exists in the merged object DB
+  # Skip pathways not present in the CellChat database to avoid errors.
   if (!(pw %in% cellchat@DB$interaction$pathway_name)) {
     cat(paste0("    SKIPPED: pathway '", pw, "' not found in CellChat DB\n"))
     next
   }
 
-  # --- Violin plot ---
+  # --- Violin or dot plot (type controlled by GENE_EXPR_VIZ_TYPE in config.R) ---
   tryCatch({
     gg_violin <- plotGeneExpression(
       cellchat,
@@ -135,7 +154,7 @@ for (pw in pathways.show) {
       ) &
       labs(fill = "Condition", color = "Condition")
 
-    # Show cell type labels only on the bottom panel
+    # Show cell type labels only on the bottom panel to reduce clutter.
     if (!is.null(gg_violin$patches) && length(gg_violin$patches$plots) > 0) {
       n_plots <- length(gg_violin$patches$plots)
       for (i in seq_len(n_plots - 1)) {

@@ -1,13 +1,26 @@
 #!/bin/bash
 # run_all.sh
-# Full ALL_clusters pipeline: truncatedMean (trim=0.30)
-# Multi-group (Healthy + Crypto + Immuno) + pairwise comparisons.
-# Procedure 1: per-condition CellChat objects (00).
-# Procedure 2: multi-group merge + visualization + pairwise comparisons.
+# Full ALL_clusters CellChat pipeline orchestrator.
+#
+# What it does:
+#   Runs the complete analysis in order:
+#     Procedure 1: per-condition CellChat objects (00_prepare_cellchat.R)
+#     Procedure 2: multi-group merge (01) plus all visualization steps (02-13).
+#   Pairwise-only scripts (03, 07, 09, 10) are called after the multi-group block.
+#   Steps currently disabled in this runner are commented out; they can be enabled
+#   by uncommenting the corresponding Rscript line.
+#
+# Inputs:
+#   - Seurat RDS file: data_input/<PREP_INPUT_RDS>
+#   - Configuration file: ALL_clusters/src/Rscript/config.R
+#
+# Outputs:
+#   - Result/data/  : intermediate and final RData/RDS objects
+#   - Result/plot/  : all generated figures
 #
 # Usage:
-#   bash run_all.sh              # P1 + P2
-#   bash run_all.sh skip_p1      # P2 only
+#   bash run_all.sh              # Procedure 1 + Procedure 2
+#   bash run_all.sh skip_p1      # Procedure 2 only (re-use existing prep objects)
 
 set -euo pipefail
 

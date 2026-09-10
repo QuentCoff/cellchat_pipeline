@@ -1,7 +1,27 @@
 #!/usr/bin/env Rscript
 # 13_export_objects.R
 # CellChat Procedure 2 Step 16: Export merged CellChat object and object.list
-# Multi-group version.
+#
+# What it does:
+#   Loads the final multi-group object list and the merged CellChat object (preferring
+#   the DEG-updated version if available) and copies them into the export folder.
+#   This provides a single location for downstream use or sharing.
+#
+# Inputs:
+#   - Multi-group object list RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_object.list_<MERGE_PREFIX>.RData
+#   - Merged or DEG CellChat RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_merged_<MERGE_PREFIX>.RData
+#     Result/plot/<MERGED_DIR_NAME>/step12/cellchat_deg.RData (preferred)
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Exported RData files in Result/plot/<MERGED_DIR_NAME>/step16/:
+#       cellchat_object.list_<MERGE_PREFIX>.RData
+#       cellchat_merged_<MERGE_PREFIX>.RData
+#
+# Previous step: 01_merge_cellchat.R (or 09_bubble_dysfunctional.R for DEG object)
+# Next step: none (final export)
 #
 # Usage:
 #   Rscript 13_export_objects.R
@@ -47,7 +67,7 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 cat("=== Step 16: Export CellChat objects ===\n")
 
 # ============================================
-# Load object.list
+# Load and export object.list
 # ============================================
 
 if (!file.exists(rdata_list)) {
@@ -55,18 +75,19 @@ if (!file.exists(rdata_list)) {
 }
 
 cat("  Loading object.list...\n")
-load(rdata_list)  # loads 'object.list'
+load(rdata_list)  # loads 'object.list' (one CellChat object per condition)
 cat(paste0("    Datasets: ", paste(names(object.list), collapse = ", "), "\n"))
 
-# Save to step16 directory
+# Copy the object list to the export folder.
 cat("  Saving object.list...\n")
 save(object.list,
      file = file.path(out_dir, paste0("cellchat_object.list_", merge_prefix, ".RData")))
 
 # ============================================
-# Load merged cellchat (prefer DEG version)
+# Load and export merged cellchat (prefer DEG version)
 # ============================================
 
+# Prefer the DEG-updated object from step 12; fall back to the plain merged object.
 if (file.exists(rdata_deg)) {
   cat("  Loading cellchat (with DEG results)...\n")
   load(rdata_deg)  # loads 'cellchat'
@@ -77,6 +98,7 @@ if (file.exists(rdata_deg)) {
   stop(paste0("Merged cellchat not found. Run previous steps first.\n"))
 }
 
+# Copy the merged cellchat object to the export folder.
 cat("  Saving cellchat...\n")
 save(cellchat,
      file = file.path(out_dir, paste0("cellchat_merged_", merge_prefix, ".RData")))

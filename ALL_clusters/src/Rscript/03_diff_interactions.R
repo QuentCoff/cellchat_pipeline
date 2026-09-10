@@ -1,8 +1,25 @@
 #!/usr/bin/env Rscript
 # 03_diff_interactions.R
-# CellChat Procedure 2 Step 6:
-# Pairwise differential interactions between cell populations.
-# Loops through all PAIRWISE comparisons defined in config.R.
+# CellChat Procedure 2 Step 6: Pairwise differential interactions between cell populations
+#
+# What it does:
+#   Loads each pairwise merged CellChat object defined in config.R$PAIRWISE and
+#   produces combined side-by-side differential circle plots (number and strength
+#   of interactions). Options A/B (individual pairwise plots and heatmaps) are
+#   currently disabled.
+#
+# Inputs:
+#   - Pairwise merged RData files:
+#     Result/data/merged/<MERGED_DIR_NAME>/<pair_prefix>/cellchat_merged_<pair_prefix>.RData
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Combined differential circle plots in Result/plot/<MERGED_DIR_NAME>/step6/:
+#       diff_circle_count_combined.png
+#       diff_circle_weight_combined.png
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 04_circle_per_dataset.R
 #
 # Usage:
 #   Rscript 03_diff_interactions.R
@@ -30,6 +47,7 @@ source(file.path(script_dir, "config.R"))
 
 base_dir <- BASE_DIR
 
+# Helper: build input/output paths for a pairwise comparison.
 pair_paths <- function(pair) {
   pair_prefix <- paste(tolower(pair), collapse = "_vs_")
   list(
@@ -42,6 +60,7 @@ pair_paths <- function(pair) {
   )
 }
 
+# Helper: generate combined differential circle plots for one pairwise comparison.
 run_pair <- function(pair) {
   paths <- pair_paths(pair)
   dir.create(paths$out_dir, showWarnings = FALSE, recursive = TRUE)
@@ -107,6 +126,7 @@ run_pair <- function(pair) {
 
 cat("\n=== Option C: Combined side-by-side diff circle plots ===\n")
 
+# Hard-coded paths for the two expected pairwise comparisons.
 hc_rdata <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                       MERGED_DIR_NAME, "healthy_vs_crypto",
                       "cellchat_merged_healthy_vs_crypto.RData")
@@ -121,9 +141,8 @@ if (file.exists(hc_rdata) && file.exists(hi_rdata)) {
   load(hi_rdata)
   cellchat_hi <- cellchat
 
-  # Keep only colors for the cell types present after subsetting.
-  # Merged CellChat objects do not have levels(cellchat@idents), so we use
-  # the rownames of the per-condition count matrix as the cell-type order.
+  # Determine the cell-type order from the count matrix row names and keep only
+  # colors defined in config.R.
   cell_types <- rownames(cellchat_hc@net[[1]]$count)
   celltype_colors <- CELLTYPE_COLORS[cell_types]
   celltype_colors <- celltype_colors[!is.na(celltype_colors)]

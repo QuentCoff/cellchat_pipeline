@@ -1,5 +1,19 @@
 # config.R
 # Central configuration for the ALL_clusters CellChat pipeline
+#
+# What it does:
+#   Defines all project paths, biological conditions, cell-type subsetting rules,
+#   color palettes, pairwise comparisons and script-specific parameters used by
+#   every R script in this folder. A change here is picked up by all scripts on
+#   the next run; individual R files do not need to be edited.
+#
+# Used by:
+#   00_prepare_cellchat.R, 01_merge_cellchat.R, 02_compare_interactions.R,
+#   03_diff_interactions.R, 04_circle_per_dataset.R, 05_circle_coarse_celltypes.R,
+#   06_signaling_role_scatter.R, 07_net_similarity.R, 08_ranknet_heatmap.R,
+#   09_bubble_dysfunctional.R, 10_dysfunctional_viz.R, 11_pathway_viz.R,
+#   12_gene_expression_viz.R, 13_export_objects.R
+#
 # Edit the values below to change the conditions, subsetting, colors and
 # script-specific parameters.
 

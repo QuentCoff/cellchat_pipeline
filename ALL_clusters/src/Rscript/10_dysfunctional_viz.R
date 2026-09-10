@@ -1,7 +1,24 @@
 #!/usr/bin/env Rscript
 # 10_dysfunctional_viz.R
 # CellChat Procedure 2 Step 13: Visualize up/down regulated signaling events
-# Pairwise version: loops through all PAIRWISE comparisons defined in config.R.
+#
+# What it does:
+#   For each pairwise comparison in config.R$PAIRWISE, loads the DEG results from
+#   step 12 (or recomputes them if missing) and visualizes up- and down-regulated
+#   signaling with bubble plots, chord diagrams and wordcloud plots.
+#
+# Inputs:
+#   - Pairwise merged RData and object list RData files
+#   - Step 12 CSV outputs (net_up.csv, net_down.csv) or cellchat_deg.RData
+#   - Configuration file: config.R
+#
+# Outputs (per pairwise comparison in Result/plot/<MERGED_DIR_NAME>/<pair>/step13/):
+#   - bubble_up_dysfunctional.png, bubble_down_dysfunctional.png
+#   - chord_up.pdf, chord_down.pdf
+#   - wordcloud_up.pdf, wordcloud_down.pdf
+#
+# Previous step: 09_bubble_dysfunctional.R
+# Next step: 11_pathway_viz.R
 #
 # Usage:
 #   Rscript 10_dysfunctional_viz.R
@@ -59,7 +76,7 @@ run_pair <- function(pair) {
   }
 
   out_dir <- paths$out_dir
-  step12_dir <- paths$step12_dir
+  step12_dir <- paths$step12_dir  # to load CSVs from 09_bubble_dysfunctional.R
 
   cat("=== Loading CellChat objects ===\n")
   load(paths$rdata_list)    # loads 'object.list'
@@ -72,13 +89,14 @@ run_pair <- function(pair) {
 # Step 13: Dysfunctional signaling visualization
 # ============================================
 
-# Load DEG results from Step 12 if available
+# Load DEG results from Step 12 if available.
 net_up_file   <- file.path(step12_dir, "net_up.csv")
 net_down_file <- file.path(step12_dir, "net_down.csv")
 
 cat("\n=== Step 13: Dysfunctional signaling visualization ===\n")
 
 # --- Recompute DEG if CSVs missing ---
+# If 09_bubble_dysfunctional.R has not been run, compute the DEG object on the fly.
 if (!file.exists(net_up_file) || !file.exists(net_down_file)) {
   cat("  Step 12 results not found — recomputing DEG...\n")
   pos.dataset   <- dataset_names[2]
@@ -106,6 +124,8 @@ if (!file.exists(net_up_file) || !file.exists(net_down_file)) {
   net.up   <- read.csv(net_up_file,   stringsAsFactors = FALSE)
   net.down <- read.csv(net_down_file, stringsAsFactors = FALSE)
 }
+
+# The pos.dataset is the second dataset in the pairwise comparison (condition test).
 
 cat(paste0("  Up-regulated interactions: ", nrow(net.up), "\n"))
 cat(paste0("  Down-regulated interactions: ", nrow(net.down), "\n\n"))
@@ -230,6 +250,7 @@ cat("\n--- Procedure 2 Step 13 complete ---\n")
 cat(paste0("Output: ", out_dir, "\n"))
 }
 
+# Run step 13 for every pairwise comparison defined in config.R.
 for (pair in PAIRWISE) {
   cat(paste0("\n##############################################\n"))
   cat(paste0("# Pairwise comparison: ", paste(pair, collapse = " vs "), "\n"))

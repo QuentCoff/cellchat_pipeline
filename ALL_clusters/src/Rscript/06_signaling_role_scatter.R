@@ -1,7 +1,25 @@
 #!/usr/bin/env Rscript
 # 06_signaling_role_scatter.R
 # CellChat Procedure 2 Step 9: Compare major sources and targets in 2D space
-# Multi-group version for 9A; 9B is only generated when exactly two groups are present.
+#
+# What it does:
+#   9A: Loads the multi-group object list and produces signaling-role scatter plots
+#       (outgoing vs incoming signaling) for all conditions on a common axis scale.
+#   9B: For each cell type in SIGNALING_ROLE_CELL_TYPES, loads the relevant pairwise
+#       object list and produces signaling-changes scatter plots. When more than two
+#       groups are present, it loops through config.R$PAIRWISE comparisons.
+#
+# Inputs:
+#   - Multi-group object list and merged RData
+#   - Pairwise object list RData files for 9B
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Result/plot/<MERGED_DIR_NAME>/step9/signaling_role_scatter.png
+#   - Result/plot/<MERGED_DIR_NAME>/step9/<pair>/signaling_changes_<celltype>.png
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 07_net_similarity.R
 #
 # Usage:
 #   Rscript 06_signaling_role_scatter.R
@@ -67,14 +85,14 @@ celltype_colors <- celltype_colors[!is.na(celltype_colors)]
 
 cat("=== Step 9A: Signaling role scatter (all cell populations) ===\n")
 
-# Pre-requisite: compute network centrality scores for each object
+# Pre-requisite: compute network centrality scores for each object.
 cat("=== Pre-processing: netAnalysis_computeCentrality ===\n")
 object.list <- lapply(object.list, function(x) {
   netAnalysis_computeCentrality(x, slot.name = "netP")
 })
 cat("  Done.\n\n")
 
-# (i) Compute min/max number of interactions across all datasets
+# (i) Compute min/max number of interactions across all datasets to align axes.
 num.link <- sapply(object.list, function(x) {
   rowSums(x@net$count) + colSums(x@net$count) - diag(x@net$count)
 })
@@ -98,7 +116,7 @@ for (i in 1:length(object.list)) {
     )
 }
 
-# Use the same x/y axis limits across all scatter plots
+# Use the same x/y axis limits across all scatter plots.
 get_axis_range <- function(built, axis = "x") {
   scales <- if (axis == "x") built$layout$panel_scales_x else built$layout$panel_scales_y
   if (!is.null(scales[[1]]$range$range)) {
@@ -165,7 +183,7 @@ if (length(object.list) == 2) {
 }
 
 for (run in pairwise_runs) {
-  if (is.null(run)) next
+  if (is.null(run)) next  # skip pairs whose object list is missing
 
   pair_dir <- file.path(out_dir, run$prefix)
   dir.create(pair_dir, showWarnings = FALSE, recursive = TRUE)
@@ -173,6 +191,7 @@ for (run in pairwise_runs) {
   cat(paste0("  Pairwise comparison: ", run$prefix, "\n"))
   cellchat_b <- mergeCellChat(run$obj_list, add.names = names(run$obj_list))
 
+  # Color order for signalingChanges_scatter: grey for unchanged, then condition 1 and 2.
   pair_colors <- unname(c(
     "grey10",
     CONDITION_COLORS[names(run$obj_list)[1]],

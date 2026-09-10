@@ -1,7 +1,24 @@
 #!/usr/bin/env Rscript
 # 02_compare_interactions.R
 # CellChat Procedure 2 Step 5: Compare total number of interactions and strength
-# Multi-group version: one bar per condition.
+#
+# What it does:
+#   Loads the multi-group merged CellChat object and produces bar plots comparing
+#   the total number of interactions and the total interaction strength across
+#   all conditions.
+#
+# Inputs:
+#   - Multi-group merged RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_merged_<MERGE_PREFIX>.RData
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Bar plots in Result/plot/<MERGED_DIR_NAME>/step5/:
+#       compare_interactions_count.png
+#       compare_interactions_weight.png
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 03_diff_interactions.R
 #
 # Usage:
 #   Rscript 02_compare_interactions.R
@@ -35,6 +52,7 @@ rdata_merged <- file.path(base_dir, PROJECT_NAME, "Result", "data", "merged",
                           merged_dir, merge_prefix,
                           paste0("cellchat_merged_", merge_prefix, ".RData"))
 
+# Output folder for Step 5 comparison plots.
 out_dir <- file.path(base_dir, PROJECT_NAME, "Result", "plot",
                      merged_dir, STEP5_DIR)
 
@@ -45,7 +63,7 @@ if (!file.exists(rdata_merged)) {
 }
 
 cat("=== Loading merged CellChat object ===\n")
-load(rdata_merged)  # loads 'cellchat' object
+load(rdata_merged)  # loads 'cellchat' object from 01_merge_cellchat.R
 cat(paste0("Datasets: ", paste(unique(cellchat@meta$datasets), collapse = ", "), "\n\n"))
 
 # ============================================
@@ -56,6 +74,7 @@ cat("=== Step 5A: Comparing number of interactions ===\n")
 
 png(file.path(out_dir, "compare_interactions_count.png"),
     width = COMPARE_WIDTH, height = COMPARE_HEIGHT, res = COMPARE_RES)
+# Bar plot comparing the total number of interactions per condition.
 gg1 <- compareInteractions(cellchat, show.legend = FALSE, group = seq_along(CONDITIONS), color.use = unname(CONDITION_COLORS[CONDITIONS])) +
   ggtitle(paste0("Number of Interactions\n", paste(CONDITIONS, collapse = " vs "))) +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"))
@@ -71,6 +90,7 @@ cat("\n=== Step 5B: Comparing interaction strength ===\n")
 
 png(file.path(out_dir, "compare_interactions_weight.png"),
     width = COMPARE_WIDTH, height = COMPARE_HEIGHT, res = COMPARE_RES)
+# Same comparison but using interaction strength (weight) instead of counts.
 gg2 <- compareInteractions(cellchat, show.legend = FALSE, group = seq_along(CONDITIONS), measure = "weight", color.use = unname(CONDITION_COLORS[CONDITIONS])) +
   ggtitle(paste0("Interaction Strength\n", paste(CONDITIONS, collapse = " vs "))) +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"))

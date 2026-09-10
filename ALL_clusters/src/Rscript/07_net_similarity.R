@@ -1,8 +1,27 @@
 #!/usr/bin/env Rscript
 # 07_net_similarity.R
 # CellChat Procedure 2 Step 10: Signaling pathway similarity across conditions
-# Pairwise version: functional/structural similarity + joint manifold learning + ranking.
-# Loops through all PAIRWISE comparisons defined in config.R.
+#
+# What it does:
+#   For each pairwise comparison in config.R$PAIRWISE, computes signaling-pathway
+#   similarity (functional or structural), runs joint manifold learning (UMAP),
+#   clusters pathways and ranks them by distance. Produces embedding, zoom-in and
+#   rank-similarity plots plus a CSV of pathway distances.
+#
+# Inputs:
+#   - Pairwise merged RData files:
+#     Result/data/merged/<MERGED_DIR_NAME>/<pair_prefix>/cellchat_merged_<pair_prefix>.RData
+#   - Configuration file: config.R
+#
+# Outputs (per pairwise comparison in Result/plot/<MERGED_DIR_NAME>/step10/<pair>/):
+#   - embedding_<NET_SIM_TYPE>.png
+#   - embedding_zoomin_<NET_SIM_TYPE>.png
+#   - rank_similarity_<NET_SIM_TYPE>.png
+#   - rank_similarity_data_<NET_SIM_TYPE>.csv
+#   - cellchat_clustered_<NET_SIM_TYPE>.RData
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 08_ranknet_heatmap.R
 #
 # Usage:
 #   Rscript 07_net_similarity.R
@@ -34,6 +53,7 @@ base_dir <- BASE_DIR
 sim_type <- NET_SIM_TYPE
 set.seed(NET_SIM_SEED)
 
+# Helper: build paths for one pairwise comparison.
 pair_paths <- function(pair) {
   pair_prefix <- paste(tolower(pair), collapse = "_vs_")
   sub_dir <- paste0(pair[1], "vs", pair[2])  # e.g. HealthyvsCrypto
@@ -65,16 +85,19 @@ run_pair <- function(pair) {
 
   # Step 10-i: Compute network similarity
   cat("=== Step 10-i: computeNetSimilarityPairwise ===\n")
+  # Compute pairwise functional or structural similarity between signaling networks.
   cellchat <- computeNetSimilarityPairwise(cellchat, type = sim_type)
   cat("  Done.\n\n")
 
   # Step 10-ii: Joint manifold learning
   cat("=== Step 10-ii: netEmbedding ===\n")
+  # Embed pathways into a shared low-dimensional space (UMAP).
   cellchat <- netEmbedding(cellchat, type = sim_type, umap.method = NET_SIM_UMAP_METHOD)
   cat("  Done.\n\n")
 
   # Step 10-iii: Joint clustering
   cat("=== Step 10-iii: netClustering ===\n")
+  # Cluster pathways based on the embedding.
   cellchat <- netClustering(cellchat, type = sim_type)
   cat("  Done.\n\n")
 
@@ -141,6 +164,7 @@ run_pair <- function(pair) {
   # Step 10-vi: rankSimilarity
   cat("=== Step 10-vi: rankSimilarity ===\n")
 
+  # Extract embedded coordinates for the two groups and compute Euclidean distances.
   comparison.name <- paste(c(1, 2), collapse = "-")
   Y <- cellchat@netP$similarity[[sim_type]]$dr[[comparison.name]]
   group <- sub(".*--", "", rownames(Y))
@@ -157,6 +181,7 @@ run_pair <- function(pair) {
     sqrt(sum((data1[i, ] - data2[i, ])^2))
   })
 
+  # Build a ranked table of pathway distances and save it.
   rank_df <- data.frame(
     pathway = pathway.show,
     distance = dist,
@@ -188,7 +213,7 @@ run_pair <- function(pair) {
   )
   cat(paste0("  Saved: rank_similarity_", sim_type, ".png\n\n"))
 
-  # Save cellchat with similarity/clustering for downstream river plot
+  # Save the updated cellchat object (with similarity/clustering) for downstream use.
   save(cellchat, file = file.path(paths$out_dir, paste0("cellchat_clustered_", sim_type, ".RData")))
   cat(paste0("  Saved: cellchat_clustered_", sim_type, ".RData\n\n"))
 
@@ -196,6 +221,7 @@ run_pair <- function(pair) {
   cat(paste0("Output: ", paths$out_dir, "\n"))
 }
 
+# Run step 10 for every pairwise comparison defined in config.R.
 for (pair in PAIRWISE) {
   cat(paste0("\n##############################################\n"))
   cat(paste0("# Pairwise comparison: ", paste(pair, collapse = " vs "), "\n"))

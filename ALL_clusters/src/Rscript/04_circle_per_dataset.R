@@ -1,7 +1,23 @@
 #!/usr/bin/env Rscript
 # 04_circle_per_dataset.R
 # CellChat Procedure 2 Step 7: Circle plots normalized across datasets
-# Multi-group version: one circle plot per condition on a common scale.
+#
+# What it does:
+#   Loads the multi-group object list and draws one circle plot per condition
+#   using a common edge-weight scale, for both number and strength of interactions.
+#
+# Inputs:
+#   - Multi-group object list RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_object.list_<MERGE_PREFIX>.RData
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Circle plots in Result/plot/<MERGED_DIR_NAME>/step7/:
+#       circle_per_dataset_count.png
+#       circle_per_dataset_weight.png
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 05_circle_coarse_celltypes.R
 #
 # Usage:
 #   Rscript 04_circle_per_dataset.R
@@ -45,10 +61,10 @@ if (!file.exists(rdata_list)) {
 }
 
 cat("=== Loading object.list ===\n")
-load(rdata_list)  # loads 'object.list'
+load(rdata_list)  # loads 'object.list' (one CellChat object per condition)
 cat(paste0("Conditions: ", paste(names(object.list), collapse = ", "), "\n\n"))
 
-# Keep only colors for the cell types present after subsetting
+# Keep only colors for the cell types present after optional subsetting.
 celltype_colors <- CELLTYPE_COLORS[levels(object.list[[1]]@idents)]
 celltype_colors <- celltype_colors[!is.na(celltype_colors)]
 
@@ -57,6 +73,7 @@ celltype_colors <- celltype_colors[!is.na(celltype_colors)]
 # ============================================
 
 cat("=== Step 7-i: getMaxWeight ===\n")
+# Compute a common max weight so all circle plots share the same scale.
 weight.max <- getMaxWeight(object.list, attribute = c("idents", "count"))
 cat(paste0("Max cells per group: ", weight.max[1], "\n"))
 cat(paste0("Max interactions: ", weight.max[2], "\n\n"))
@@ -93,7 +110,7 @@ cat(paste0("  Saved: circle_per_dataset_count.png\n"))
 # ============================================
 
 cat("\n=== Circle plots per dataset (strength) ===\n")
-
+# Same common-scale approach for interaction strength.
 weight.max.w <- getMaxWeight(object.list, attribute = c("idents", "weight"))
 
 png(file.path(out_dir, "circle_per_dataset_weight.png"),

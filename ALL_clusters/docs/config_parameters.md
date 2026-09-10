@@ -269,3 +269,6 @@ This script also reads `STEP12_DIR` to look for the DEG-updated CellChat object.
   you want to override the automatic naming.
 - Any parameter value change in `config.R` is picked up by all scripts on the next
   run, without touching the individual R files.
+- The configuration and the pipeline are **not frozen**: you can add new options
+  to `config.R` and new scripts to `ALL_clusters/src/Rscript/` as long as they
+  source `config.R` and follow the existing directory conventions.

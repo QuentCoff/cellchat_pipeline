@@ -1,7 +1,25 @@
 #!/usr/bin/env Rscript
 # 09_bubble_dysfunctional.R
 # CellChat Procedure 2 Step 12: Identify dysfunctional signaling
-# Pairwise version: loops through all PAIRWISE comparisons defined in config.R.
+#
+# What it does:
+#   For each pairwise comparison in config.R$PAIRWISE, identifies up- and down-regulated
+#   ligand-receptor pairs and signaling genes, produces bubble plots, extracts DEG-related
+#   communication tables and saves the DEG-updated CellChat object.
+#
+# Inputs:
+#   - Pairwise merged RData and object list RData files
+#   - Configuration file: config.R
+#
+# Outputs (per pairwise comparison in Result/plot/<MERGED_DIR_NAME>/<pair>/step12/):
+#   - bubble_all.png, bubble_up.png, bubble_down.png
+#   - net_up.csv, net_down.csv
+#   - gene_up.csv, gene_down.csv
+#   - enriched_signaling_up.csv (optional)
+#   - cellchat_deg.RData
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 10_dysfunctional_viz.R
 #
 # Usage:
 #   Rscript 09_bubble_dysfunctional.R
@@ -13,8 +31,8 @@ suppressPackageStartupMessages({
 
 options(stringsAsFactors = FALSE)
 
-# Helper: dynamic plot size based on bubble plot content
-# y-axis = L-R pairs, x-axis = source -> target combinations
+# Helper: dynamic plot size based on bubble plot content.
+# y-axis = L-R pairs, x-axis = source -> target combinations.
 bubble_size <- function(gg) {
   d <- gg$data
   n_lr     <- length(unique(d$interaction_name_2))
@@ -78,7 +96,7 @@ run_pair <- function(pair) {
   cat(paste0("Datasets: ", paste(dataset_names, collapse = ", "), "\n"))
   cat(paste0("pos.dataset (ref): ", dataset_names[2], "\n\n"))
 
-# Resolve source/target cell-type indices from config
+# Resolve source/target cell-type indices from the merged object's joint idents.
 idents <- levels(cellchat@idents$joint)
 source_idx <- match(DYSFUNCTIONAL_SOURCES, idents)
 names(source_idx) <- DYSFUNCTIONAL_SOURCES
@@ -200,6 +218,7 @@ tryCatch({
 
   # --- Map DEG results onto inferred communications ---
   cat("\n  Mapping DEG onto cell-cell communications...\n")
+  # Link differentially expressed genes to the inferred L-R communications.
   net <- netMappingDEG(cellchat, features.name = features.name)
   cat("  Done.\n")
 
@@ -247,7 +266,8 @@ tryCatch({
     cat("  Saved: enriched_signaling_up.csv\n")
   }
 
-  # Save DEG cellchat object
+  # --- Save DEG cellchat object ---
+  # This object is reused by 10_dysfunctional_viz.R and 12_gene_expression_viz.R.
   save(cellchat, file = file.path(out_dir, "cellchat_deg.RData"))
   cat("  Saved: cellchat_deg.RData\n")
 
@@ -259,6 +279,7 @@ cat("\n--- Procedure 2 Step 12 complete ---\n")
 cat(paste0("Output: ", out_dir, "\n"))
 }
 
+# Run step 12 for every pairwise comparison defined in config.R.
 for (pair in PAIRWISE) {
   cat(paste0("\n##############################################\n"))
   cat(paste0("# Pairwise comparison: ", paste(pair, collapse = " vs "), "\n"))

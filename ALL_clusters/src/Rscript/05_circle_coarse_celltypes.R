@@ -1,15 +1,25 @@
 #!/usr/bin/env Rscript
 # 05_circle_coarse_celltypes.R
 # CellChat Procedure 2 Step 8: Circle plots at coarse cell type level
-# Multi-group version: per-dataset circle plots on a common coarse scale.
-# Pairwise differential plots are only generated when exactly two groups are present.
 #
-# Cell type grouping (5 groups):
-#   SSC        : SSC
-#   Germ       : Spermatocyte, Spermatid
-#   Sertoli    : Sertoli
-#   Leydig     : Leydig
-#   Somatic    : Myoid, Fibroblast, Endothelial
+# What it does:
+#   Loads the multi-group object list, merges fine cell types into coarse groups
+#   defined in config.R (COARSE_GROUP_MAP), and produces per-dataset circle plots.
+#   Differential coarse plots are generated only when exactly two groups are present.
+#
+# Inputs:
+#   - Multi-group object list RData:
+#     Result/data/merged/<MERGED_DIR_NAME>/<MERGE_PREFIX>/cellchat_object.list_<MERGE_PREFIX>.RData
+#   - Configuration file: config.R
+#
+# Outputs:
+#   - Circle plots in Result/plot/<MERGED_DIR_NAME>/step8/:
+#       circle_coarse_per_dataset_count.png
+#       diff_coarse_count.png  (if exactly 2 groups)
+#       diff_coarse_weight.png (if exactly 2 groups)
+#
+# Previous step: 01_merge_cellchat.R
+# Next step: 06_signaling_role_scatter.R
 #
 # Usage:
 #   Rscript 05_circle_coarse_celltypes.R
@@ -60,18 +70,19 @@ cat(paste0("Conditions: ", paste(names(object.list), collapse = ", "), "\n"))
 # Step 8-i: Define coarse cell type groups
 # ============================================
 
-cat("\n=== Step 8-i: Define coarse cell types ===\n")
+cat("\n=== Step 8-i: Define coarse cell type groups ===\n")
 
-# Cell types must match the order of levels(object.list[[1]]@idents)
-# Expected order: SSC, Spermatocyte, Spermatid, Sertoli, Leydig, Myoid, Fibroblast, Endothelial
+# Cell types must match the order of levels(object.list[[1]]@idents).
 cell_levels <- levels(object.list[[1]]@idents)
 cat(paste0("Cell type order: ", paste(cell_levels, collapse = ", "), "\n"))
 
+# Map each fine cell type to its coarse group using config.R; unknown types go to default.
 group.cellType <- ifelse(
   cell_levels %in% names(COARSE_GROUP_MAP),
   COARSE_GROUP_MAP[cell_levels],
   COARSE_GROUP_DEFAULT
 )
+# Enforce the desired coarse-group ordering for plotting.
 group.cellType <- factor(group.cellType, levels = COARSE_GROUP_LEVELS)
 
 cat(paste0("Grouping:\n"))
@@ -85,10 +96,12 @@ for (i in seq_along(cell_levels)) {
 
 cat("\n=== Step 8-ii: mergeInteractions + mergeCellChat ===\n")
 
+# Collapse fine cell types into coarse groups for every per-condition object.
 object.list <- lapply(object.list, function(x) {
   mergeInteractions(x, group.cellType)
 })
 
+# Merge the coarse-grained objects into a multi-group CellChat object.
 cellchat <- mergeCellChat(object.list, add.names = names(object.list))
 
 # ============================================
@@ -97,6 +110,7 @@ cellchat <- mergeCellChat(object.list, add.names = names(object.list))
 
 cat("\n=== Step 8-iii: Circle plots per dataset (coarse) ===\n")
 
+# Common scale for the coarse-grained count matrices.
 weight.max <- getMaxWeight(
   object.list,
   slot.name = c("idents", "net", "net"),
@@ -126,6 +140,7 @@ cat(paste0("  Saved: circle_coarse_per_dataset_count.png\n"))
 # Step 8-iv/v: Differential plots only for pairwise merges
 # ============================================
 
+# Differential coarse plots are only supported when exactly two groups are present.
 if (length(object.list) == 2) {
   cat("\n=== Step 8-iv: Differential number of interactions (coarse) ===\n")
 
