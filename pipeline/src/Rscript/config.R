@@ -44,7 +44,7 @@ SEURAT_CELL_TYPE_COL   <- "cell_type"        # column containing cell-type label
 
 # If TRUE, subset CellChat objects to TARGET_CELLTYPES before merging.
 # If FALSE, keep all cell types.
-DO_SUBSET <- FALSE
+DO_SUBSET <- TRUE
 
 # Target cell types to retain for analysis (used only when DO_SUBSET = TRUE)
 TARGET_CELLTYPES <- c("SSC", "Sertoli", "Leydig")
